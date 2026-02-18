@@ -1,0 +1,66 @@
+[
+  {
+    "username": "Ghost",
+    "totalScore": 2500,
+    "highestLevel": 5,
+    "password": "x",
+    "bio": "Senior stealth operative."
+  },
+  {
+    "username": "Shadow",
+    "totalScore": 1800,
+    "highestLevel": 3,
+    "password": "x",
+    "bio": "Infiltration specialist."
+  },
+  {
+    "username": "Pulse",
+    "totalScore": 1200,
+    "highestLevel": 2,
+    "password": "x",
+    "bio": "New recruit."
+  },
+  {
+    "username": "testuser",
+    "password": "$2b$10$uo3p0IbX5nf.wopIoFmpb.YrLeBMPdRtIUovliz/3UOKI5gXU2.FO",
+    "totalSolved": 0,
+    "correctAnswers": 0,
+    "accuracy": 0,
+    "highestLevel": 1,
+    "totalScore": 0,
+    "createdAt": "2026-02-18T17:40:51.980Z"
+  },
+  {
+    "username": "diag_user",
+    "password": "$2b$10$mmwRwk/u6L.cfIdVMAqlJechb67BvOldRogsU8.hW4mrTBuS7YKlq",
+    "totalSolved": 0,
+    "correctAnswers": 0,
+    "accuracy": 0,
+    "highestLevel": 1,
+    "totalScore": 0,
+    "createdAt": "2026-02-18T17:45:53.718Z"
+  },
+  {
+    "username": "sdd",
+    "password": "$2b$10$fK6MPbloEvxg7kjDR.n4YOVgaInDhhtkULch/QfX.alTkVi7SsK/W",
+    "email": "",
+    "totalSolved": 5,
+    "correctAnswers": 1,
+    "accuracy": 20,
+    "highestLevel": 10,
+    "totalScore": 6950,
+    "createdAt": "2026-02-18T17:48:26.166Z",
+    "bio": "hello"
+  },
+  {
+    "username": "abcd",
+    "password": "$2b$10$ACTHs5eqtLTMJZqv5GToW.xyceV31G9cZeFgfw4tUz1ReDHw9uueW",
+    "email": "abc@gmail.com",
+    "totalSolved": 0,
+    "correctAnswers": 0,
+    "accuracy": 0,
+    "highestLevel": 1,
+    "totalScore": 0,
+    "createdAt": "2026-02-18T18:52:08.660Z"
+  }
+]

@@ -1,0 +1,28 @@
+# node_modules
+node_modules/
+dist/
+build/
+.DS_Store
+
+# Environment Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database Fallbacks
+backend/data/*.json
+!backend/data/players.json
+
+# Local Testing Scripts
+backend/scripts/checkCloud.js
+backend/scripts/testSync.js
+backend/scripts/seedMaps.js
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
