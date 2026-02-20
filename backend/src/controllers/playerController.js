@@ -65,8 +65,10 @@ exports.register = async (req, res) => {
 
         if (isDbConnected) {
             const existingPlayer = await Player.findOne({ username });
-            if (existingPlayer) {
-                return res.status(400).json({ error: 'Username already exists' });
+            const existingMemory = memoryPlayers.find(p => p.username === username);
+
+            if (existingPlayer || existingMemory) {
+                return res.status(400).json({ error: 'Username already exists (Cloud or Local)' });
             }
 
             const hashedPassword = await bcrypt.hash(password, 10);
@@ -131,6 +133,18 @@ exports.login = async (req, res) => {
 
         if (isDbConnected) {
             player = await Player.findOne({ username });
+
+            // AUTOMATIC MIGRATION: If found in memory but not DB, migrate to Cloud
+            if (!player) {
+                const localPlayer = memoryPlayers.find(p => p.username === username);
+                if (localPlayer) {
+                    console.log(`[Migration] Moving operative [${username}] from local JSON to Cloud Cluster...`);
+                    player = new Player(localPlayer);
+                    await player.save();
+                    // Optional: remove from memoryPlayers or mark as migrated
+                    console.log(`[Migration] SUCCESS: Operative [${username}] is now Cloud-native.`);
+                }
+            }
         } else {
             console.log('MongoDB not connected, using in-memory store for login');
             player = memoryPlayers.find(p => p.username === username);
@@ -217,8 +231,20 @@ exports.getLeaderboard = async (req, res) => {
 
 exports.getMaps = async (req, res) => {
     try {
-        const maps = await Map.find().sort({ order: 1 });
-        res.status(200).json(maps);
+        const isDbConnected = mongoose.connection.readyState === 1;
+        if (isDbConnected) {
+            const maps = await Map.find().sort({ order: 1 });
+            res.status(200).json(maps);
+        } else {
+            console.log('[Fallback] Serving static map data...');
+            const fallbackMaps = [
+                { id: 'map1', title: 'Sector Alpha', unlockedByDefault: true, order: 1 },
+                { id: 'map2', title: 'Tactical Vault', unlockedByDefault: true, order: 2 },
+                { id: 'map3', title: 'Delta Complex', unlockedByDefault: true, order: 3 },
+                { id: 'map4', title: 'Neural Core', unlockedByDefault: true, order: 4 }
+            ];
+            res.status(200).json(fallbackMaps);
+        }
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -272,6 +298,16 @@ exports.updateGameState = async (req, res) => {
 
         if (isDbConnected) {
             player = await Player.findOne({ username });
+
+            // Safety Migration: If mid-session and DB came online, migrate now
+            if (!player) {
+                const localPlayer = memoryPlayers.find(p => p.username === username);
+                if (localPlayer) {
+                    console.log(`[Safety Sync] Migrating active session for [${username}] to Cloud...`);
+                    player = new Player(localPlayer);
+                    // We don't save yet, we update below and then save
+                }
+            }
         } else {
             player = memoryPlayers.find(p => p.username === username);
         }

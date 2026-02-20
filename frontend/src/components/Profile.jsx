@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+import ProfileCard from './ProfileCard';
+
 function Profile({ user, onUpdateUser }) {
     const [bio, setBio] = useState(user.bio || '');
     const [email, setEmail] = useState(user.email || '');
@@ -28,77 +30,70 @@ function Profile({ user, onUpdateUser }) {
 
     return (
         <div className="main-content animate-fade">
-            <h1 className="glow-text">Operative Profile</h1>
+            <h1 className="glow-text">Operative Status</h1>
 
-            <div className="dashboard-grid">
-                <div className="glass-panel" style={{ gridColumn: 'span 2' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginTop: '2rem' }}>
+                {/* Left Side: Premium Card */}
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+                    <ProfileCard user={user} showUserInfo={true} enableMobileTilt={true} />
+                </div>
+
+                {/* Right Side: Bio & Actions */}
+                <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <h2>{user.username}</h2>
+                        <h3 className="glow-text">Mission Logistics</h3>
                         <button className="secondary" onClick={() => setEditing(!editing)}>
-                            {editing ? 'Cancel' : 'Edit Profile'}
+                            {editing ? 'Cancel' : 'Update Credentials'}
                         </button>
                     </div>
 
-                    <div style={{ marginTop: '2rem' }}>
+                    <div>
                         {editing ? (
-                            <form onSubmit={handleUpdate}>
-                                <label>Email Address</label>
+                            <form onSubmit={handleUpdate} className="animate-fade">
+                                <label style={{ color: 'var(--neon-cyan)', fontSize: '0.8rem' }}>ENCRYPTED EMAIL</label>
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="operative@network.com"
+                                    className="mono-input"
                                 />
-                                <label>Mission Bio</label>
+                                <label style={{ color: 'var(--neon-cyan)', fontSize: '0.8rem', marginTop: '1rem', display: 'block' }}>OPERATIVE BIO</label>
                                 <textarea
+                                    className="mono-input"
                                     style={{
                                         width: '100%',
-                                        padding: '1rem',
-                                        background: 'rgba(0,0,0,0.3)',
-                                        border: '1px solid var(--border)',
-                                        borderRadius: '8px',
-                                        color: 'white',
-                                        minHeight: '100px',
-                                        marginBottom: '1rem',
-                                        fontFamily: 'inherit'
+                                        minHeight: '120px',
+                                        marginTop: '0.5rem'
                                     }}
                                     value={bio}
                                     onChange={(e) => setBio(e.target.value)}
                                     placeholder="Tell us about your stealth expertise..."
                                 />
-                                <button type="submit" className="primary" disabled={saving}>
-                                    {saving ? 'Syncing...' : 'Save Changes'}
+                                <button type="submit" className="primary" style={{ width: '100%', marginTop: '1rem' }} disabled={saving}>
+                                    {saving ? 'UPLOADING...' : 'COMMIT CHANGES'}
                                 </button>
                             </form>
                         ) : (
-                            <div>
-                                <p style={{ color: 'var(--text-dim)', marginBottom: '1rem' }}>{user.email || 'No email associated.'}</p>
-                                <p style={{ color: 'var(--text)', whiteSpace: 'pre-wrap' }}>{user.bio || 'No bio available. Operative chooses to remain mysterious.'}</p>
+                            <div className="animate-fade">
+                                <div style={{ marginBottom: '1.5rem' }}>
+                                    <p style={{ color: 'var(--text-dim)', fontSize: '0.7rem', textTransform: 'uppercase' }}>Electronic Address</p>
+                                    <p style={{ color: '#fff' }}>{user.email || 'UNSPECIFIED'}</p>
+                                </div>
+                                <div>
+                                    <p style={{ color: 'var(--text-dim)', fontSize: '0.7rem', textTransform: 'uppercase' }}>Biography</p>
+                                    <p style={{ color: 'var(--text)', whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
+                                        {user.bio || 'No bio available. Operative chooses to remain mysterious.'}
+                                    </p>
+                                </div>
                             </div>
                         )}
-                        {message && <p style={{ marginTop: '1rem', color: message.includes('success') ? '#4caf50' : '#e94560' }}>{message}</p>}
+                        {message && <p style={{ marginTop: '1rem', color: message.includes('success') ? 'var(--neon-cyan)' : 'var(--neon-pink)', fontSize: '0.9rem' }}>{message}</p>}
                     </div>
-                </div>
 
-                <div className="glass-panel">
-                    <h3>Detailed Stats</h3>
-                    <ul style={{ listStyle: 'none', marginTop: '1.5rem' }}>
-                        <li style={{ padding: '0.8rem 0', borderBottom: '1px solid var(--border)' }}>
-                            Total Score: <span className="glow-text" style={{ float: 'right' }}>{user.totalScore}</span>
-                        </li>
-                        <li style={{ padding: '0.8rem 0', borderBottom: '1px solid var(--border)' }}>
-                            Max Level: <span className="glow-text" style={{ float: 'right' }}>{user.highestLevel}</span>
-                        </li>
-                        <li style={{ padding: '0.8rem 0', borderBottom: '1px solid var(--border)' }}>
-                            Puzzles Tried: <span className="glow-text" style={{ float: 'right' }}>{user.totalSolved}</span>
-                        </li>
-                        <li style={{ padding: '0.8rem 0', borderBottom: '1px solid var(--border)' }}>
-                            Success Rate: <span className="glow-text" style={{ float: 'right' }}>{Math.round(user.accuracy)}%</span>
-                        </li>
-                        <li style={{ padding: '0.8rem 0' }}>
-                            Operative Since: <span className="glow-text" style={{ float: 'right' }}>{new Date(user.createdAt).toLocaleDateString()}</span>
-                        </li>
-                    </ul>
+                    <div style={{ marginTop: 'auto', paddingTop: '2rem', borderTop: '1px solid var(--border)', fontSize: '0.7rem', opacity: 0.5 }}>
+                        DANGER: ACCESSING LEVEL 4 CLEARANCE DATA. UNAUTHORIZED VIEWING IS PUNISHABLE BY LAW.
+                    </div>
                 </div>
             </div>
         </div>

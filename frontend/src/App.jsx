@@ -6,6 +6,8 @@ import Dashboard from './components/Dashboard';
 import Leaderboard from './components/Leaderboard';
 import Profile from './components/Profile';
 
+import FloatingLines from './components/FloatingLines';
+
 /**
  * Main App component.
  * Demonstrates theme: Virtual Identity (Username persistence).
@@ -44,7 +46,7 @@ function App() {
     };
 
     const renderNavbar = () => (
-        <nav className="navbar">
+        <nav className="navbar" style={{ zIndex: 1000 }}>
             <div className="glow-text" style={{ fontSize: '1.5rem', fontWeight: 'bold', cursor: 'pointer' }} onClick={() => setView('dashboard')}>
                 PuzzlePulse
             </div>
@@ -59,9 +61,21 @@ function App() {
     );
 
     return (
-        <div className="app-container">
+        <div className="app-container" style={{ position: 'relative' }}>
+            <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: -1, opacity: 0.6 }}>
+                <FloatingLines
+                    enabledWaves={["top", "middle", "bottom"]}
+                    lineCount={12}
+                    lineDistance={15}
+                    bendRadius={200}
+                    bendStrength={-0.4}
+                    interactive={true}
+                    parallax={true}
+                />
+            </div>
+
             {!user ? (
-                <div className="main-content">
+                <div className="main-content" style={{ zIndex: 1 }}>
                     {view === 'register' ? (
                         <Register
                             onRegister={() => setView('login')}
@@ -86,12 +100,7 @@ function App() {
                             <div className="main-content animate-fade">
                                 <div className="glass-panel" style={{ padding: '1rem' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', alignItems: 'center' }}>
-                                        <div>
-                                            <h2 className="glow-text">{activeMap?.title || "Active Map"}</h2>
-                                            <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>
-                                                {activeMap?.completed ? 'Map Decoded - Deep Scanning Sectors...' : `Sector ${activeMap?.lastSector || 1} | Difficulty: ${difficulty}`}
-                                            </p>
-                                        </div>
+                                        <h2 className="glow-text">{activeMap?.title || "Active Map"}</h2>
                                         <button className="secondary" onClick={() => setView('dashboard')}>Return to Hub</button>
                                     </div>
                                     <GameCanvas user={user} map={activeMap} difficulty={difficulty} onUpdateUser={(updated) => {

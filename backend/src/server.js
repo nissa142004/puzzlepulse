@@ -30,19 +30,17 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Database Connection and Server Start
+// Database Connection (Parallel)
 mongoose.connect(MONGODB_URI)
     .then(() => {
         console.log(`[Database] Secure link established with Cloud Cluster.`);
-        app.listen(PORT, () => {
-            console.log(`[HQ] Server authenticated and running on port ${PORT}`);
-        });
     })
     .catch(err => {
         console.error('[Database Error] Cloud connection failed:', err.message);
-        console.log('System will attempt to operate in high-availability fallback mode (Local JSON).');
-        // Start server anyway in fallback mode
-        app.listen(PORT, () => {
-            console.log(`[HQ] Server running on port ${PORT} (FALLBACK MODE)`);
-        });
+        console.log('System operating in high-availability fallback mode (Local JSON).');
     });
+
+// Start Server
+app.listen(PORT, () => {
+    console.log(`[HQ] Server authenticated and running on port ${PORT}`);
+});

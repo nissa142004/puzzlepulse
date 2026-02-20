@@ -31,6 +31,16 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
     const keys = useRef({});
     const requestRef = useRef();
 
+    // Level Walls (Refined for space and exit clarity)
+    const levelWalls = {
+        1: [{ x: 300, y: 0, w: 20, h: 250 }, { x: 500, y: 250, w: 20, h: 250 }],
+        2: [{ x: 200, y: 50, w: 400, h: 20 }, { x: 200, y: 430, w: 400, h: 20 }],
+        3: [{ x: 400, y: 50, w: 20, h: 400 }, { x: 100, y: 250, w: 150, h: 20 }, { x: 550, y: 250, w: 150, h: 20 }],
+        4: [{ x: 150, y: 150, w: 100, h: 100 }, { x: 550, y: 150, w: 100, h: 100 }, { x: 350, y: 50, w: 100, h: 100 }, { x: 350, y: 350, w: 100, h: 100 }]
+    };
+
+    const currentWalls = levelWalls[stats.level % 5] || levelWalls[1];
+
     // Map Themes
     const themes = {
         map1: { primary: '#00fff2', bg: '#0d1117', grid: 'rgba(0, 255, 242, 0.1)' },
@@ -41,28 +51,50 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
 
     const currentTheme = themes[map?.id] || themes.map1;
 
-    // Initialization: Setup guards based on level & difficulty
+    // Initialization: Balanced Difficulty Scaling
     useEffect(() => {
         const newGuards = [];
 
-        // Difficulty adjustments
-        const difficultyMod = difficulty === 'hard' ? 1.5 : (difficulty === 'easy' ? 0.7 : 1);
-        const numGuards = Math.floor((1 + stats.level) * (difficulty === 'hard' ? 1.5 : 1));
+        // Difficulty Level Multipliers (Eased significantly)
+        const diffMultipliers = {
+            easy: 0.4,
+            medium: 0.8,
+            hard: 1.3
+        };
+        const baseSpeedMod = diffMultipliers[difficulty] || 1.0;
+
+        // Fewer guards
+        const numGuards = stats.level === 1 ? 1 : Math.floor((1 + stats.level * 0.4) * (difficulty === 'hard' ? 1.3 : 1));
 
         for (let i = 0; i < numGuards; i++) {
-            const x = 200 + Math.random() * 500;
-            const y = 100 + Math.random() * 300;
+            let x, y, overlap;
+            do {
+                overlap = false;
+                x = 150 + Math.random() * 550;
+                y = 50 + Math.random() * 400;
+                for (const wall of currentWalls) {
+                    if (x > wall.x - 20 && x < wall.x + wall.w + 20 && y > wall.y - 20 && y < wall.y + wall.h + 20) {
+                        overlap = true;
+                    }
+                }
+            } while (overlap);
+
             const path = [
                 { x, y },
-                { x: x + 100 + Math.random() * 100, y: y + Math.random() * 50 },
-                { x: x + Math.random() * 50, y: y + 100 + Math.random() * 50 }
+                { x: 100 + Math.random() * 600, y: 50 + Math.random() * 400 },
+                { x: 100 + Math.random() * 600, y: 50 + Math.random() * 400 }
             ];
-            newGuards.push(new Guard(x, y, path, (1.5 + stats.level * 0.2) * difficultyMod));
+
+            // Speed scales: Level 1 on Easy will be ~0.5 speed, very slow
+            const baseLevelSpeed = 1.2 + (stats.level - 1) * 0.4;
+            const finalGuardSpeed = baseLevelSpeed * baseSpeedMod;
+
+            newGuards.push(new Guard(x, y, path, finalGuardSpeed));
         }
         setGuards(newGuards);
     }, [stats.level, map, difficulty]);
 
-    // Event Driven: Key listeners
+    // Restore Key Listeners
     useEffect(() => {
         const handleKeyDown = (e) => keys.current[e.key] = true;
         const handleKeyUp = (e) => keys.current[e.key] = false;
@@ -78,29 +110,45 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
         if (gameState !== 'playing' || showLifeLost) return;
 
         // Player movement
-        let newX = player.x;
-        let newY = player.y;
-        if (keys.current['ArrowUp']) newY -= player.speed;
-        if (keys.current['ArrowDown']) newY += player.speed;
-        if (keys.current['ArrowLeft']) newX -= player.speed;
-        if (keys.current['ArrowRight']) newX += player.speed;
+        let nextX = player.x;
+        let nextY = player.y;
+        if (keys.current['ArrowUp'] || keys.current['w']) nextY -= player.speed;
+        if (keys.current['ArrowDown'] || keys.current['s']) nextY += player.speed;
+        if (keys.current['ArrowLeft'] || keys.current['a']) nextX -= player.speed;
+        if (keys.current['ArrowRight'] || keys.current['d']) nextX += player.speed;
 
-        newX = Math.max(player.radius, Math.min(800 - player.radius, newX));
-        newY = Math.max(player.radius, Math.min(500 - player.radius, newY));
+        // Simple wall collision
+        let canMoveX = true;
+        let canMoveY = true;
+        for (const wall of currentWalls) {
+            if (nextX + player.radius > wall.x && nextX - player.radius < wall.x + wall.w &&
+                player.y + player.radius > wall.y && player.y - player.radius < wall.y + wall.h) {
+                canMoveX = false;
+            }
+            if (player.x + player.radius > wall.x && player.x - player.radius < wall.x + wall.w &&
+                nextY + player.radius > wall.y && nextY - player.radius < wall.y + wall.h) {
+                canMoveY = false;
+            }
+        }
 
-        if (newX > 750) {
+        const finalX = canMoveX ? Math.max(player.radius, Math.min(800 - player.radius, nextX)) : player.x;
+        const finalY = canMoveY ? Math.max(player.radius, Math.min(500 - player.radius, nextY)) : player.y;
+
+        if (finalX > 750) {
             handleLevelComplete();
             return;
         }
 
-        setPlayer(prev => ({ ...prev, x: newX, y: newY }));
+        setPlayer({ ...player, x: finalX, y: finalY });
 
-        guards.forEach(guard => {
+        for (const guard of guards) {
             guard.update();
-            if (guard.checkDetection(newX, newY)) {
+            if (guard.checkDetection(finalX, finalY)) {
+                console.log("[Game] Player DETECTED by guard.");
                 setGameState('puzzle');
+                return;
             }
-        });
+        }
 
         draw();
         requestRef.current = requestAnimationFrame(update);
@@ -111,10 +159,11 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
 
-        // Background with Gaming Grid Theme
+        // Background
         ctx.fillStyle = currentTheme.bg;
         ctx.fillRect(0, 0, 800, 500);
 
+        // Gaming Grid
         ctx.strokeStyle = currentTheme.grid;
         ctx.lineWidth = 1;
         for (let i = 0; i < 800; i += 40) {
@@ -122,6 +171,22 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
         }
         for (let j = 0; j < 500; j += 40) {
             ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(800, j); ctx.stroke();
+        }
+
+        // Render Walls
+        ctx.fillStyle = '#161b22';
+        ctx.strokeStyle = currentTheme.primary;
+        ctx.lineWidth = 2;
+        for (const wall of currentWalls) {
+            ctx.fillRect(wall.x, wall.y, wall.w, wall.h);
+            ctx.strokeRect(wall.x, wall.y, wall.w, wall.h);
+
+            // Wall Glow Effect
+            ctx.save();
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = currentTheme.primary;
+            ctx.strokeRect(wall.x, wall.y, wall.w, wall.h);
+            ctx.restore();
         }
 
         // Goal area
@@ -132,15 +197,15 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
         ctx.fillRect(750, 0, 50, 500);
 
         ctx.fillStyle = currentTheme.primary;
-        ctx.font = 'bold 16px Orbitron, sans-serif';
-        ctx.fillText('EXIT', 755, 255);
+        ctx.font = 'bold 20px Orbitron, sans-serif';
+        ctx.fillText('EXIT', 750, 255);
 
         // Guards
         guards.forEach(guard => guard.draw(ctx));
 
-        // Player Upgraded Draw
+        // Player
         ctx.save();
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = 20;
         ctx.shadowColor = currentTheme.primary;
         ctx.beginPath();
         ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
@@ -161,7 +226,7 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
         const nextLevel = stats.level + 1;
         const levelScore = 100 * stats.level * (difficulty === 'hard' ? 2 : (difficulty === 'easy' ? 0.5 : 1));
         setStats(prev => ({ ...prev, level: nextLevel, score: prev.score + levelScore }));
-        setPlayer(prev => ({ ...prev, x: 50, y: 50 }));
+        setPlayer({ ...player, x: 50, y: 50 });
 
         try {
             const resp = await axios.post('/api/game/update', {
@@ -179,7 +244,7 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
     const handlePuzzleResult = async (correct) => {
         if (correct) {
             setGameState('playing');
-            setPlayer(prev => ({ ...prev, x: prev.x - 60 }));
+            setPlayer(prev => ({ ...prev, x: Math.max(50, prev.x - 100) }));
         } else {
             const newLives = stats.lives - 1;
             setShowLifeLost(true);
@@ -188,7 +253,7 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
             } else {
                 setStats(prev => ({ ...prev, lives: newLives }));
                 setGameState('playing');
-                setPlayer(prev => ({ ...prev, x: 50, y: 50 }));
+                setPlayer({ ...player, x: 50, y: 50 });
             }
         }
 
@@ -209,36 +274,48 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
     if (gameState === 'gameOver') {
         return (
             <div className="game-over animate-fade" style={{ background: 'rgba(255,0,0,0.1)' }}>
-                <h2 className="glow-text" style={{ color: 'var(--neon-pink)', fontSize: '3rem' }}>CONNECTION SEVERED</h2>
-                <p style={{ margin: '1rem 0', fontSize: '1.2rem' }}>Tactical Error. Session Lost.</p>
-                <p>Map Score: {Math.floor(stats.score)}</p>
-                <button className="primary pulse-animation" onClick={() => window.location.reload()} style={{ marginTop: '2rem' }}>RE-ESTABLISH</button>
+                <h2 className="glow-text" style={{ color: 'var(--neon-pink)', fontSize: '3rem' }}>GAME OVER</h2>
+                <p style={{ margin: '1rem 0', fontSize: '1.2rem' }}>You were detected! Mission failed.</p>
+                <p>Final Score: {Math.floor(stats.score)}</p>
+                <button className="primary pulse-animation" onClick={() => window.location.reload()} style={{ marginTop: '2rem' }}>RETRY</button>
             </div>
         );
     }
 
     return (
-        <div className="game-container grid-gaming" style={{ background: currentTheme.bg }}>
-            <div className="hud-v2" style={{ position: 'absolute', top: '1rem', left: '1rem', background: 'rgba(0,0,0,0.8)' }}>
+        <div
+            className="game-container grid-gaming scanlines"
+            style={{
+                background: currentTheme.bg,
+                position: 'relative',
+                overflow: 'hidden'
+            }}
+        >
+            {/* HUD and Canvas... */}
+            <div className="hud-v2" style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 10 }}>
                 <div className="hud-item">
-                    <span className="hud-label">Sector</span>
+                    <span className="hud-label">Level</span>
                     <span className="hud-value">{stats.level}</span>
                 </div>
                 <div className="hud-item">
-                    <span className="hud-label">Intensity</span>
+                    <span className="hud-label">Difficulty</span>
                     <span className="hud-value" style={{ textTransform: 'uppercase', color: currentTheme.primary }}>{difficulty}</span>
                 </div>
                 <div className="hud-item">
-                    <span className="hud-label">Integrity</span>
+                    <span className="hud-label">Lives</span>
                     <span className="hud-value" style={{ color: stats.lives === 1 ? 'var(--neon-pink)' : currentTheme.primary }}>
-                        {stats.lives} HP
+                        {stats.lives}
                     </span>
+                </div>
+                <div className="hud-item">
+                    <span className="hud-label">Score</span>
+                    <span className="hud-value">{Math.floor(stats.score)}</span>
                 </div>
             </div>
 
-            <canvas ref={canvasRef} width={800} height={500} style={{ display: 'block' }} />
+            <canvas ref={canvasRef} width={800} height={500} style={{ display: 'block', borderRadius: '4px' }} />
 
-            {gameState === 'puzzle' && <PuzzleModal onSolve={handlePuzzleResult} />}
+            {gameState === 'puzzle' && <PuzzleModal onSolve={handlePuzzleResult} themeColor={currentTheme.primary} />}
             {showLifeLost && <LifePopup lives={stats.lives} onClose={() => setShowLifeLost(false)} />}
         </div>
     );

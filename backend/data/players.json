@@ -62,5 +62,50 @@
     "highestLevel": 1,
     "totalScore": 0,
     "createdAt": "2026-02-18T18:52:08.660Z"
+  },
+  {
+    "username": "name1",
+    "password": "$2b$10$3UfyUJPYrcBNHWF9ZkPfIuJ0xr/Yh46xLD0uwrEbh8aBuboqVVdUC",
+    "email": "",
+    "totalSolved": 37,
+    "correctAnswers": 17,
+    "accuracy": 45.94594594594595,
+    "highestLevel": 10,
+    "totalScore": 6600,
+    "maps": [
+      {
+        "id": "map1",
+        "title": "Sector Alpha",
+        "unlocked": true,
+        "completed": true,
+        "lastSector": 6,
+        "bestScore": 400
+      },
+      {
+        "id": "map2",
+        "title": "Tactical Vault",
+        "unlocked": true,
+        "completed": true,
+        "lastSector": 10,
+        "bestScore": 900
+      },
+      {
+        "id": "map3",
+        "title": "Delta Complex",
+        "unlocked": true,
+        "completed": false,
+        "lastSector": 1,
+        "bestScore": 0
+      },
+      {
+        "id": "map4",
+        "title": "Neural Core",
+        "unlocked": true,
+        "completed": false,
+        "lastSector": 1,
+        "bestScore": 0
+      }
+    ],
+    "createdAt": "2026-02-20T16:26:06.728Z"
   }
 ]
