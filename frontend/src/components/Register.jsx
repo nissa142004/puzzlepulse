@@ -37,7 +37,6 @@ function Register({ onRegister, onSwitchToLogin }) {
             setLoading(false);
         }
     };
-
     return (
         <div className="login-container animate-fade">
             <div className="glass-panel">
