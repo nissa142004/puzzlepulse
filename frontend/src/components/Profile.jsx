@@ -91,8 +91,28 @@ function Profile({ user, onUpdateUser }) {
                         {message && <p style={{ marginTop: '1rem', color: message.includes('success') ? 'var(--neon-cyan)' : 'var(--neon-pink)', fontSize: '0.9rem' }}>{message}</p>}
                     </div>
 
-                    <div style={{ marginTop: 'auto', paddingTop: '2rem', borderTop: '1px solid var(--border)', fontSize: '0.7rem', opacity: 0.5 }}>
-                        DANGER: ACCESSING PLAYER DATA. UNAUTHORIZED VIEWING IS PROHIBITED.
+                    <div style={{ marginTop: 'auto', paddingTop: '2rem', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div style={{ fontSize: '0.7rem', opacity: 0.5 }}>
+                            DANGER: ACCESSING PLAYER DATA. UNAUTHORIZED VIEWING IS PROHIBITED.
+                        </div>
+                        <button
+                            className="secondary"
+                            style={{ width: 'fit-content', color: 'var(--neon-pink)', borderColor: 'var(--neon-pink)', fontSize: '0.8rem' }}
+                            onClick={async () => {
+                                if (window.confirm("CRITICAL WARNING: This will PERMANENTLY WIPE all mission progress, scores, and sector unlocks. This action cannot be undone. Proceed?")) {
+                                    try {
+                                        const res = await axios.post('/api/game/reset', { username: user.username });
+                                        onUpdateUser(res.data);
+                                        localStorage.setItem('puzzlePulseUser', JSON.stringify(res.data));
+                                        alert("Neural link reset. All mission data purged.");
+                                    } catch (err) {
+                                        alert("Purge failed. Connection unstable.");
+                                    }
+                                }
+                            }}
+                        >
+                            WIPE MISSION DATA
+                        </button>
                     </div>
                 </div>
             </div>

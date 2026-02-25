@@ -49,8 +49,11 @@ function MapCard({ map, onDeploy }) {
 
             <div>
                 <h3 className={!isLocked ? 'glow-text' : ''}>{map.title}</h3>
+                <p style={{ fontSize: '0.7rem', color: 'var(--neon-cyan)', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+                    FLOORS {map.id === 'map1' ? '1-4' : map.id === 'map2' ? '5-8' : map.id === 'map3' ? '9-12' : '13-16'}
+                </p>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>
-                    {isLocked ? 'Complete previous map to unlock access.' : 'Select difficulty and start playing.'}
+                    {isLocked ? 'Complete previous sector to unlock access.' : 'Select difficulty and begin infiltration.'}
                 </p>
 
                 {!isLocked && (

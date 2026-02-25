@@ -10,8 +10,8 @@ import LifePopup from './LifePopup';
  */
 const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
     const canvasRef = useRef(null);
-    const [gameState, setGameState] = useState('playing'); // playing, puzzle, gameOver
-    const [player, setPlayer] = useState({ x: 50, y: 50, radius: 12, speed: 5 });
+    const [gameState, setGameState] = useState('playing'); // playing, puzzle, gameOver, levelCleared, missionComplete
+    const [player, setPlayer] = useState({ x: 50, y: 50, radius: 12, speed: 6.5 });
     const [guards, setGuards] = useState([]);
 
     // Initial stats based on difficulty
@@ -39,7 +39,7 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
         4: [{ x: 150, y: 150, w: 100, h: 100 }, { x: 550, y: 150, w: 100, h: 100 }, { x: 350, y: 50, w: 100, h: 100 }, { x: 350, y: 350, w: 100, h: 100 }]
     };
 
-    const currentWalls = levelWalls[stats.level % 5] || levelWalls[1];
+    const currentWalls = levelWalls[((stats.level - 1) % 4) + 1] || levelWalls[1];
 
     // Map Themes
     const themes = {
@@ -135,14 +135,19 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
         const finalY = canMoveY ? Math.max(player.radius, Math.min(500 - player.radius, nextY)) : player.y;
 
         if (finalX > 750) {
-            handleLevelComplete();
+            if (stats.level >= 16) {
+                setGameState('missionComplete');
+                handleLevelComplete(true);
+            } else {
+                setGameState('levelCleared');
+            }
             return;
         }
 
         setPlayer({ ...player, x: finalX, y: finalY });
 
         for (const guard of guards) {
-            guard.update();
+            guard.update(currentWalls);
             if (guard.checkDetection(finalX, finalY)) {
                 console.log("[Game] Player DETECTED by guard.");
                 setGameState('puzzle');
@@ -163,15 +168,51 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
         ctx.fillStyle = currentTheme.bg;
         ctx.fillRect(0, 0, 800, 500);
 
-        // Gaming Grid
-        ctx.strokeStyle = currentTheme.grid;
+        // Grid Background
+        ctx.strokeStyle = currentTheme.grid || 'rgba(0, 255, 242, 0.1)';
         ctx.lineWidth = 1;
-        for (let i = 0; i < 800; i += 40) {
+        for (let i = 0; i < 800; i += 50) {
             ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 500); ctx.stroke();
         }
-        for (let j = 0; j < 500; j += 40) {
+        for (let j = 0; j < 500; j += 50) {
             ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(800, j); ctx.stroke();
         }
+
+        // Draw Start Pad (Entry Zone)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.fillRect(0, 0, 100, 500);
+        ctx.strokeStyle = currentTheme.primary;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(5, 5, 90, 490);
+        ctx.fillStyle = currentTheme.primary;
+        ctx.font = 'bold 10px monospace';
+        ctx.fillText("ENTRY ZONE", 15, 20);
+
+        // Draw Exit Warp Gate
+        const warpPulse = Math.sin(Date.now() * 0.005) * 5 + 10;
+        const gradient = ctx.createLinearGradient(750, 0, 800, 0);
+        gradient.addColorStop(0, 'transparent');
+        gradient.addColorStop(1, currentTheme.primary);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(750, 0, 50, 500);
+
+        ctx.strokeStyle = currentTheme.primary;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < 500; i += 20) {
+            ctx.moveTo(760 + warpPulse, i);
+            ctx.lineTo(790, i + 10);
+        }
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(785, 250);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillStyle = currentTheme.primary;
+        ctx.font = 'bold 12px Orbitron, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText("EXIT GATE", 0, 0);
+        ctx.restore();
 
         // Render Walls
         ctx.fillStyle = '#161b22';
@@ -189,31 +230,53 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
             ctx.restore();
         }
 
-        // Goal area
-        const gradient = ctx.createLinearGradient(750, 0, 800, 0);
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
-        gradient.addColorStop(1, `${currentTheme.primary}44`);
-        ctx.fillStyle = gradient;
-        ctx.fillRect(750, 0, 50, 500);
-
-        ctx.fillStyle = currentTheme.primary;
-        ctx.font = 'bold 20px Orbitron, sans-serif';
-        ctx.fillText('EXIT', 750, 255);
-
         // Guards
         guards.forEach(guard => guard.draw(ctx));
 
-        // Player
+        // Player - "Little Man" Sprite
         ctx.save();
-        ctx.shadowBlur = 20;
+        ctx.translate(player.x, player.y);
+
+        // Dynamic Breathing/Idle effect
+        const breath = Math.sin(Date.now() * 0.005) * 2;
+
+        // Glow
+        ctx.shadowBlur = 15;
         ctx.shadowColor = currentTheme.primary;
+
+        // Head
         ctx.beginPath();
-        ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+        ctx.arc(0, -15 + breath, 8, 0, Math.PI * 2);
         ctx.fillStyle = currentTheme.primary;
         ctx.fill();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = '#fff';
+
+        // Body
+        ctx.beginPath();
+        ctx.roundRect(-8, -7 + breath, 16, 18, 5);
+        ctx.fillStyle = currentTheme.primary;
+        ctx.fill();
+
+        // Legs
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = currentTheme.primary;
+        ctx.lineCap = 'round';
+
+        // Left Leg
+        ctx.beginPath();
+        ctx.moveTo(-4, 11 + breath);
+        ctx.lineTo(-6, 22);
         ctx.stroke();
+
+        // Right Leg
+        ctx.beginPath();
+        ctx.moveTo(4, 11 + breath);
+        ctx.lineTo(6, 22);
+        ctx.stroke();
+
+        // Visor/Eyes (Virtual Identity)
+        ctx.fillStyle = '#0a0a0a';
+        ctx.fillRect(-5, -17 + breath, 10, 3);
+
         ctx.restore();
     };
 
@@ -222,18 +285,23 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
         return () => cancelAnimationFrame(requestRef.current);
     }, [gameState, player, guards, showLifeLost, currentTheme]);
 
-    const handleLevelComplete = async () => {
+    const handleLevelComplete = async (isFinal = false) => {
         const nextLevel = stats.level + 1;
         const levelScore = 100 * stats.level * (difficulty === 'hard' ? 2 : (difficulty === 'easy' ? 0.5 : 1));
-        setStats(prev => ({ ...prev, level: nextLevel, score: prev.score + levelScore }));
-        setPlayer({ ...player, x: 50, y: 50 });
+
+        if (!isFinal) {
+            setStats(prev => ({ ...prev, level: nextLevel, score: prev.score + levelScore }));
+            setPlayer({ ...player, x: 50, y: 50 });
+        } else {
+            setStats(prev => ({ ...prev, score: prev.score + levelScore }));
+        }
 
         try {
             const resp = await axios.post('/api/game/update', {
                 username: user.username,
                 mapId: map?.id,
                 score: levelScore,
-                level: nextLevel
+                level: isFinal ? stats.level : nextLevel
             });
             onUpdateUser(resp.data);
         } catch (e) {
@@ -245,6 +313,8 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
         if (correct) {
             setGameState('playing');
             setPlayer(prev => ({ ...prev, x: Math.max(50, prev.x - 100) }));
+            // Reset guards to give player space after winning a puzzle
+            guards.forEach(g => g.reset());
         } else {
             const newLives = stats.lives - 1;
             setShowLifeLost(true);
@@ -254,6 +324,8 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
                 setStats(prev => ({ ...prev, lives: newLives }));
                 setGameState('playing');
                 setPlayer({ ...player, x: 50, y: 50 });
+                // Reset guards when life is lost
+                guards.forEach(g => g.reset());
             }
         }
 
@@ -274,10 +346,28 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
     if (gameState === 'gameOver') {
         return (
             <div className="game-over animate-fade" style={{ background: 'rgba(255,0,0,0.1)' }}>
-                <h2 className="glow-text" style={{ color: 'var(--neon-pink)', fontSize: '3rem' }}>GAME OVER</h2>
-                <p style={{ margin: '1rem 0', fontSize: '1.2rem' }}>You were detected! Mission failed.</p>
-                <p>Final Score: {Math.floor(stats.score)}</p>
-                <button className="primary pulse-animation" onClick={() => window.location.reload()} style={{ marginTop: '2rem' }}>RETRY</button>
+                <h2 className="glow-text" style={{ color: 'var(--neon-pink)', fontSize: '3rem' }}>CONNECTION LOST</h2>
+                <p style={{ margin: '1rem 0', fontSize: '1.2rem' }}>You were detected by security scans! Mission aborted.</p>
+                <p>Final Sync: {Math.floor(stats.score)}</p>
+                <button className="primary pulse-animation" onClick={() => window.location.reload()} style={{ marginTop: '2rem' }}>RE-ENGAGE</button>
+            </div>
+        );
+    }
+
+    if (gameState === 'missionComplete') {
+        return (
+            <div className="mission-complete animate-fade" style={{ background: 'rgba(0,255,100,0.1)' }}>
+                <div className="glass-panel" style={{ padding: '3rem', borderTop: '4px solid #00ff00', textAlign: 'center', background: 'rgba(0,0,0,0.8)' }}>
+                    <h2 className="glow-text" style={{ color: '#00ff00', fontSize: '3.5rem', marginBottom: '1rem' }}>MISSION COMPLETE</h2>
+                    <p style={{ color: 'var(--text-dim)', fontSize: '1.2rem', marginBottom: '2rem' }}>All sectors synchronized. Ship control established.</p>
+                    <div className="hud-v2" style={{ justifyContent: 'center', marginBottom: '2rem' }}>
+                        <div className="hud-item" style={{ background: 'rgba(0,0,0,0.5)' }}>
+                            <span className="hud-label">FINAL SYNC</span>
+                            <span className="hud-value">{Math.floor(stats.score).toLocaleString()}</span>
+                        </div>
+                    </div>
+                    <button className="primary pulse-animation" onClick={() => window.location.reload()}>RETURN TO DECK</button>
+                </div>
             </div>
         );
     }
@@ -294,21 +384,21 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
             {/* HUD and Canvas... */}
             <div className="hud-v2" style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 10 }}>
                 <div className="hud-item">
-                    <span className="hud-label">Level</span>
-                    <span className="hud-value">{stats.level}</span>
+                    <span className="hud-label">FLOOR</span>
+                    <span className="hud-value">{((stats.level - 1) % 4) + 1} / 4</span>
                 </div>
                 <div className="hud-item">
-                    <span className="hud-label">Difficulty</span>
-                    <span className="hud-value" style={{ textTransform: 'uppercase', color: currentTheme.primary }}>{difficulty}</span>
+                    <span className="hud-label">MISSION</span>
+                    <span className="hud-value" style={{ color: currentTheme.primary }}>LV {stats.level}</span>
                 </div>
                 <div className="hud-item">
-                    <span className="hud-label">Lives</span>
+                    <span className="hud-label">HULL SYNC</span>
                     <span className="hud-value" style={{ color: stats.lives === 1 ? 'var(--neon-pink)' : currentTheme.primary }}>
                         {stats.lives}
                     </span>
                 </div>
                 <div className="hud-item">
-                    <span className="hud-label">Score</span>
+                    <span className="hud-label">SYNC SCORE</span>
                     <span className="hud-value">{Math.floor(stats.score)}</span>
                 </div>
             </div>
@@ -317,6 +407,27 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
 
             {gameState === 'puzzle' && <PuzzleModal onSolve={handlePuzzleResult} themeColor={currentTheme.primary} />}
             {showLifeLost && <LifePopup lives={stats.lives} onClose={() => setShowLifeLost(false)} />}
+
+            {gameState === 'levelCleared' && (
+                <div className="overlay animate-fade" style={{ background: 'rgba(0,0,0,0.85)' }}>
+                    <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center', borderTop: `4px solid ${currentTheme.primary}` }}>
+                        <h2 className="glow-text" style={{ color: currentTheme.primary, fontSize: '2.5rem' }}>
+                            {(stats.level % 4 === 0) ? "SECTOR SYNCHRONIZED" : "SYNC SUCCESSFUL"}
+                        </h2>
+                        <p style={{ margin: '1rem 0', color: 'var(--text-dim)' }}>
+                            {(stats.level % 4 === 0)
+                                ? "Current ship sector fully encrypted. Moving to deeper systems."
+                                : "Floor data encrypted. Initializing next node."}
+                        </p>
+                        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem' }}>
+                            <button className="primary" onClick={() => {
+                                handleLevelComplete();
+                                setGameState('playing');
+                            }}>PROCEED</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

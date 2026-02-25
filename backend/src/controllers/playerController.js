@@ -22,10 +22,10 @@ try {
     } else {
         // Seed some data
         const initialMaps = [
-            { id: 'map1', title: 'Stage Alpha', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
-            { id: 'map2', title: 'Escape Vault', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
-            { id: 'map3', title: 'Complex Delta', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
-            { id: 'map4', title: 'Main Core', unlocked: true, completed: false, lastStage: 1, bestScore: 0 }
+            { id: 'map1', title: 'Sector 1: Outer Hull', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+            { id: 'map2', title: 'Sector 2: Engine Core', unlocked: false, completed: false, lastStage: 6, bestScore: 0 },
+            { id: 'map3', title: 'Sector 3: Research Lab', unlocked: false, completed: false, lastStage: 11, bestScore: 0 },
+            { id: 'map4', title: 'Sector 4: Command Deck', unlocked: false, completed: false, lastStage: 16, bestScore: 0 }
         ];
         memoryPlayers = [
             { username: 'Ghost', totalScore: 2500, highestLevel: 5, password: 'x', bio: 'Senior stealth operative.', maps: initialMaps.map(m => ({ ...m, unlocked: true })) },
@@ -100,13 +100,13 @@ exports.register = async (req, res) => {
                     title: m.title,
                     unlocked: m.unlockedByDefault,
                     completed: false,
-                    lastStage: 1,
+                    lastStage: m.id === 'map1' ? 1 : (m.id === 'map2' ? 6 : (m.id === 'map3' ? 11 : 16)),
                     bestScore: 0
                 })) : [
-                    { id: 'map1', title: 'Stage Alpha', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
-                    { id: 'map2', title: 'Escape Vault', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
-                    { id: 'map3', title: 'Complex Delta', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
-                    { id: 'map4', title: 'Main Core', unlocked: true, completed: false, lastStage: 1, bestScore: 0 }
+                    { id: 'map1', title: 'Sector 1: Outer Hull', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+                    { id: 'map2', title: 'Sector 2: Engine Core', unlocked: false, completed: false, lastStage: 6, bestScore: 0 },
+                    { id: 'map3', title: 'Sector 3: Research Lab', unlocked: false, completed: false, lastStage: 11, bestScore: 0 },
+                    { id: 'map4', title: 'Sector 4: Command Deck', unlocked: false, completed: false, lastStage: 16, bestScore: 0 }
                 ],
                 createdAt: new Date()
             });
@@ -161,16 +161,47 @@ exports.login = async (req, res) => {
                 title: m.title,
                 unlocked: m.unlockedByDefault,
                 completed: false,
-                lastStage: 1,
+                lastStage: m.id === 'map1' ? 1 : (m.id === 'map2' ? 6 : (m.id === 'map3' ? 11 : 16)),
                 bestScore: 0
             })) : [
-                { id: 'map1', title: 'Stage Alpha', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
-                { id: 'map2', title: 'Escape Vault', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
-                { id: 'map3', title: 'Complex Delta', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
-                { id: 'map4', title: 'Main Core', unlocked: true, completed: false, lastStage: 1, bestScore: 0 }
+                { id: 'map1', title: 'Sector 1: Outer Hull', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+                { id: 'map2', title: 'Sector 2: Engine Core', unlocked: false, completed: false, lastStage: 6, bestScore: 0 },
+                { id: 'map3', title: 'Sector 3: Research Lab', unlocked: false, completed: false, lastStage: 11, bestScore: 0 },
+                { id: 'map4', title: 'Sector 4: Command Deck', unlocked: false, completed: false, lastStage: 16, bestScore: 0 }
             ];
             if (!isDbConnected) saveMemoryData();
             else await player.save();
+        }
+
+        // DATA MIGRATION: Ensure existing players get new map titles and proper locking
+        const sectorNames = ['Sector 1: Outer Hull', 'Sector 2: Engine Core', 'Sector 3: Research Lab', 'Sector 4: Command Deck'];
+        let needsSave = false;
+
+        if (player.maps && player.maps.length > 0) {
+            player.maps.forEach((m, idx) => {
+                // Update title if old
+                if (m.title !== sectorNames[idx]) {
+                    m.title = sectorNames[idx];
+                    needsSave = true;
+                }
+                // Fix unlocking for existing players who had everything unlocked
+                if (idx > 0 && !player.maps[idx - 1].completed && m.unlocked === true) {
+                    m.unlocked = false;
+                    needsSave = true;
+                }
+                // Ensure starting stages are correct
+                const expectedLastStage = idx * 4 + 1;
+                if (m.lastStage < expectedLastStage) {
+                    m.lastStage = expectedLastStage;
+                    needsSave = true;
+                }
+            });
+        }
+
+        if (needsSave) {
+            console.log(`[Migration] Upgraded operative [${username}] to new spaceship sector standards.`);
+            if (isDbConnected) await player.save();
+            else saveMemoryData();
         }
 
         const isMatch = await bcrypt.compare(password, player.password);
@@ -236,10 +267,10 @@ exports.getMaps = async (req, res) => {
         } else {
             console.log('[Fallback] Serving static map data...');
             const fallbackMaps = [
-                { id: 'map1', title: 'Stage Alpha', unlockedByDefault: true, order: 1 },
-                { id: 'map2', title: 'Escape Vault', unlockedByDefault: true, order: 2 },
-                { id: 'map3', title: 'Complex Delta', unlockedByDefault: true, order: 3 },
-                { id: 'map4', title: 'Main Core', unlockedByDefault: true, order: 4 }
+                { id: 'map1', title: 'Sector 1: Outer Hull', unlockedByDefault: true, order: 1 },
+                { id: 'map2', title: 'Sector 2: Engine Core', unlockedByDefault: false, order: 2 },
+                { id: 'map3', title: 'Sector 3: Research Lab', unlockedByDefault: false, order: 3 },
+                { id: 'map4', title: 'Sector 4: Command Deck', unlockedByDefault: false, order: 4 }
             ];
             res.status(200).json(fallbackMaps);
         }
@@ -324,17 +355,18 @@ exports.updateGameState = async (req, res) => {
             if (mIndex !== -1) {
                 player.maps[mIndex].bestScore = Math.max(player.maps[mIndex].bestScore, score || 0);
 
-                // Save stage progress
+                // Save stage progress (Each map is 5 levels)
                 if (level) {
                     player.maps[mIndex].lastStage = level;
                 }
 
-                // Unlock next map if this one is successfully completed (reaching stage 5)
-                if (level >= 5 && !player.maps[mIndex].completed) {
+                // Map-specific unlock logic (Ship deck sectors)
+                const relativeLevel = level - (mIndex * 4); // Level 1-4 within that map
+                if (relativeLevel >= 4 && !player.maps[mIndex].completed) {
                     player.maps[mIndex].completed = true;
                     if (mIndex < player.maps.length - 1) {
                         player.maps[mIndex + 1].unlocked = true;
-                        console.log(`[Progression] Unlocked map: ${player.maps[mIndex + 1].id} for ${username}`);
+                        console.log(`[Progression] Sector Unlocked: ${player.maps[mIndex + 1].title} for ${username}`);
                     }
                 }
             }
@@ -353,5 +385,50 @@ exports.updateGameState = async (req, res) => {
         res.status(200).json(player);
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+exports.resetProgress = async (req, res) => {
+    try {
+        const { username } = req.body;
+        const isDbConnected = mongoose.connection.readyState === 1;
+        let player;
+
+        if (isDbConnected) {
+            player = await Player.findOne({ username });
+        } else {
+            player = memoryPlayers.find(p => p.username === username);
+        }
+
+        if (!player) return res.status(404).json({ error: 'Player not found' });
+
+        // Reset all progress
+        player.totalScore = 0;
+        player.highestLevel = 1;
+        player.totalSolved = 0;
+        player.correctAnswers = 0;
+        player.accuracy = 0;
+
+        // Reset maps to initial state
+        const initialMaps = [
+            { id: 'map1', title: 'Sector 1: Outer Hull', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+            { id: 'map2', title: 'Sector 2: Engine Core', unlocked: false, completed: false, lastStage: 5, bestScore: 0 },
+            { id: 'map3', title: 'Sector 3: Research Lab', unlocked: false, completed: false, lastStage: 9, bestScore: 0 },
+            { id: 'map4', title: 'Sector 4: Command Deck', unlocked: false, completed: false, lastStage: 13, bestScore: 0 }
+        ];
+
+        player.maps = initialMaps;
+
+        if (isDbConnected) {
+            await player.save();
+        } else {
+            saveMemoryData();
+        }
+
+        console.log(`[Reset] Operative [${username}] data purged. Initializing fresh session.`);
+        res.status(200).json(player);
+    } catch (e) {
+        console.error('Reset failed', e);
+        res.status(500).json({ error: 'Failed to reset progress' });
     }
 };

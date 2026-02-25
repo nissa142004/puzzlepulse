@@ -13,5 +13,6 @@ router.get('/leaderboard', playerController.getLeaderboard);
 router.get('/maps', playerController.getMaps);
 router.get('/puzzle', playerController.getPuzzle);
 router.post('/game/update', playerController.updateGameState);
+router.post('/game/reset', playerController.resetProgress);
 
 module.exports = router;

@@ -7,6 +7,7 @@ import Leaderboard from './components/Leaderboard';
 import Profile from './components/Profile';
 
 import FloatingLines from './components/FloatingLines';
+import NexusBackground from './components/NexusBackground';
 
 /**
  * Main App component.
@@ -51,10 +52,10 @@ function App() {
                 PuzzlePulse
             </div>
             <div className="nav-links">
-                <button className={`nav-link ${view === 'dashboard' ? 'active' : ''}`} onClick={() => setView('dashboard')} style={{ background: 'none', border: 'none' }}>Dashboard</button>
-                <button className={`nav-link ${view === 'game' ? 'active' : ''}`} onClick={() => setView('game')} disabled={!currentMap} style={{ background: 'none', border: 'none', opacity: currentMap ? 1 : 0.4 }}>Play Game</button>
-                <button className={`nav-link ${view === 'leaderboard' ? 'active' : ''}`} onClick={() => setView('leaderboard')} style={{ background: 'none', border: 'none' }}>Ranking</button>
-                <button className={`nav-link ${view === 'profile' ? 'active' : ''}`} onClick={() => setView('profile')} style={{ background: 'none', border: 'none' }}>Player</button>
+                <button className={`nav-link ${view === 'dashboard' ? 'active' : ''}`} onClick={() => setView('dashboard')} style={{ background: 'none', border: 'none' }}>Deck Hub</button>
+                <button className={`nav-link ${view === 'game' ? 'active' : ''}`} onClick={() => setView('game')} disabled={!currentMap} style={{ background: 'none', border: 'none', opacity: currentMap ? 1 : 0.4 }}>Active Mission</button>
+                <button className={`nav-link ${view === 'leaderboard' ? 'active' : ''}`} onClick={() => setView('leaderboard')} style={{ background: 'none', border: 'none' }}>Mission Logs</button>
+                <button className={`nav-link ${view === 'profile' ? 'active' : ''}`} onClick={() => setView('profile')} style={{ background: 'none', border: 'none' }}>Operative</button>
             </div>
             <button onClick={handleLogout} className="secondary" style={{ padding: '0.4rem 1rem' }}>Exit</button>
         </nav>
@@ -76,6 +77,7 @@ function App() {
 
             {!user ? (
                 <div className="main-content" style={{ zIndex: 1 }}>
+                    <NexusBackground />
                     {view === 'register' ? (
                         <Register
                             onRegister={() => setView('login')}
@@ -95,7 +97,16 @@ function App() {
                     {view === 'leaderboard' && <Leaderboard user={user} />}
                     {view === 'profile' && <Profile user={user} onUpdateUser={setUser} />}
                     {view === 'game' && (() => {
-                        const activeMap = user.maps?.find(m => m.id === currentMap?.id) || currentMap;
+                        // Dynamically determine the map based on the current mission level
+                        // This ensures that completing Level 4 automatically shifts to Sector 2 visuals
+                        const currentLevel = user.highestLevel || 1;
+                        let mapIndex = 0;
+                        if (currentLevel > 12) mapIndex = 3;
+                        else if (currentLevel > 8) mapIndex = 2;
+                        else if (currentLevel > 4) mapIndex = 1;
+
+                        const activeMap = user.maps?.[mapIndex] || (user.maps?.find(m => m.id === currentMap?.id) || currentMap);
+
                         return (
                             <div className="main-content animate-fade">
                                 <div className="glass-panel" style={{ padding: '1rem' }}>
