@@ -107,7 +107,7 @@ const ProfileCard = ({ user, showUserInfo = true, enableMobileTilt = true }) => 
                     </div>
                     <div>
                         <h2 className="glow-text" style={{ margin: 0, fontSize: '1.8rem' }}>{user.username}</h2>
-                        <p style={{ color: 'var(--text-dim)', margin: 0, fontSize: '0.9rem' }}>STATUS: ACTIVE OPERATIVE</p>
+                        <p style={{ color: 'var(--text-dim)', margin: 0, fontSize: '0.9rem' }}>STATUS: ACTIVE PLAYER</p>
                     </div>
                 </div>
 
@@ -145,7 +145,7 @@ const ProfileCard = ({ user, showUserInfo = true, enableMobileTilt = true }) => 
                             boxShadow: '0 0 10px var(--neon-cyan)'
                         }} />
                     </div>
-                    <p style={{ marginTop: '1rem', opacity: 0.6 }}>OPERATIVE SINCE: {new Date(user.createdAt).toLocaleDateString()}</p>
+                    <p style={{ marginTop: '1rem', opacity: 0.6 }}>PLAYER SINCE: {new Date(user.createdAt).toLocaleDateString()}</p>
                 </div>
             </div>
         </div>

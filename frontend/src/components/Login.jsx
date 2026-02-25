@@ -33,7 +33,7 @@ function Login({ onLogin, onSwitchToRegister }) {
         <div className="login-container animate-fade">
             <div className="glass-panel">
                 <h1 className="glow-text">PuzzlePulse</h1>
-                <p style={{ marginBottom: '2rem', color: 'var(--text-dim)' }}>Secure access required for operative deployment.</p>
+                <p style={{ marginBottom: '2rem', color: 'var(--text-dim)' }}>Secure access required for player login.</p>
 
                 <form onSubmit={handleSubmit}>
                     <input
@@ -52,14 +52,14 @@ function Login({ onLogin, onSwitchToRegister }) {
                         disabled={loading}
                     />
                     <button type="submit" className="primary" style={{ width: '100%' }} disabled={loading}>
-                        {loading ? 'Authenticating...' : 'Enter Network'}
+                        {loading ? 'Authenticating...' : 'Sign In'}
                     </button>
                 </form>
 
                 {error && <p style={{ color: 'var(--neon-pink)', marginTop: '1rem' }}>{error}</p>}
 
                 <div style={{ marginTop: '2rem', fontSize: '0.9rem' }}>
-                    <p>New operative? <span onClick={onSwitchToRegister} style={{ color: 'var(--neon-cyan)', cursor: 'pointer', textDecoration: 'underline' }}>Request credentials</span></p>
+                    <p>New player? <span onClick={onSwitchToRegister} style={{ color: 'var(--neon-cyan)', cursor: 'pointer', textDecoration: 'underline' }}>Create account</span></p>
                 </div>
             </div>
         </div>

@@ -41,9 +41,13 @@ const PlayerSchema = new mongoose.Schema({
         title: String,
         unlocked: { type: Boolean, default: false },
         completed: { type: Boolean, default: false },
-        lastSector: { type: Number, default: 1 },
+        lastStage: { type: Number, default: 1 },
         bestScore: { type: Number, default: 0 }
     }],
+    bio: {
+        type: String,
+        default: ''
+    },
     createdAt: {
         type: Date,
         default: Date.now

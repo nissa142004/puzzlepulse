@@ -40,13 +40,13 @@ function Register({ onRegister, onSwitchToLogin }) {
     return (
         <div className="login-container animate-fade">
             <div className="glass-panel">
-                <h1 className="glow-text">Recruitment</h1>
-                <p style={{ marginBottom: '2rem', color: 'var(--text-dim)' }}>Enter the shadows. Join the PuzzlePulse collective.</p>
+                <h1 className="glow-text">Create Account</h1>
+                <p style={{ marginBottom: '2rem', color: 'var(--text-dim)' }}>Join PulsePulse and start your puzzle journey.</p>
 
                 <form onSubmit={handleSubmit}>
                     <input
                         type="text"
-                        placeholder="Operative Name"
+                        placeholder="Player Name"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         disabled={loading}
@@ -54,20 +54,20 @@ function Register({ onRegister, onSwitchToLogin }) {
                     />
                     <input
                         type="email"
-                        placeholder="Secure Email"
+                        placeholder="Email Address"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         disabled={loading}
                     />
                     <input
                         type="password"
-                        placeholder="Encryption Key"
+                        placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         disabled={loading}
                     />
                     <button type="submit" className="primary" style={{ width: '100%' }} disabled={loading}>
-                        {loading ? 'Initializing...' : 'Join Collective'}
+                        {loading ? 'Creating account...' : 'Sign Up'}
                     </button>
                 </form>
 
@@ -75,7 +75,7 @@ function Register({ onRegister, onSwitchToLogin }) {
                 {success && <p style={{ color: 'var(--neon-cyan)', marginTop: '1rem' }}>{success}</p>}
 
                 <div style={{ marginTop: '2rem', fontSize: '0.9rem' }}>
-                    <p>Known operative? <span onClick={onSwitchToLogin} style={{ color: 'var(--neon-cyan)', cursor: 'pointer', textDecoration: 'underline' }}>Return to terminal</span></p>
+                    <p>Registered player? <span onClick={onSwitchToLogin} style={{ color: 'var(--neon-cyan)', cursor: 'pointer', textDecoration: 'underline' }}>Sign In</span></p>
                 </div>
             </div>
         </div>

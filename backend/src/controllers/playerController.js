@@ -22,10 +22,10 @@ try {
     } else {
         // Seed some data
         const initialMaps = [
-            { id: 'map1', title: 'Sector Alpha', unlocked: true, completed: false, lastSector: 1, bestScore: 0 },
-            { id: 'map2', title: 'Tactical Vault', unlocked: true, completed: false, lastSector: 1, bestScore: 0 },
-            { id: 'map3', title: 'Delta Complex', unlocked: true, completed: false, lastSector: 1, bestScore: 0 },
-            { id: 'map4', title: 'Neural Core', unlocked: true, completed: false, lastSector: 1, bestScore: 0 }
+            { id: 'map1', title: 'Stage Alpha', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+            { id: 'map2', title: 'Escape Vault', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+            { id: 'map3', title: 'Complex Delta', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+            { id: 'map4', title: 'Main Core', unlocked: true, completed: false, lastStage: 1, bestScore: 0 }
         ];
         memoryPlayers = [
             { username: 'Ghost', totalScore: 2500, highestLevel: 5, password: 'x', bio: 'Senior stealth operative.', maps: initialMaps.map(m => ({ ...m, unlocked: true })) },
@@ -80,9 +80,9 @@ exports.register = async (req, res) => {
 
             await player.save();
         } else {
-            console.log(`Fallback: Registering operative [${username}] in-memory...`);
+            console.log(`Fallback: Registering player [${username}] in-memory...`);
             if (memoryPlayers.find(p => p.username === username)) {
-                console.log(`Registration failed: Operative [${username}] already exists.`);
+                console.log(`Registration failed: Player [${username}] already exists.`);
                 return res.status(400).json({ error: 'Username already exists (In-Memory)' });
             }
             const hashedPassword = await bcrypt.hash(password, 10);
@@ -100,18 +100,18 @@ exports.register = async (req, res) => {
                     title: m.title,
                     unlocked: m.unlockedByDefault,
                     completed: false,
-                    lastSector: 1,
+                    lastStage: 1,
                     bestScore: 0
                 })) : [
-                    { id: 'map1', title: 'Sector Alpha', unlocked: true, completed: false, lastSector: 1, bestScore: 0 },
-                    { id: 'map2', title: 'Tactical Vault', unlocked: true, completed: false, lastSector: 1, bestScore: 0 },
-                    { id: 'map3', title: 'Delta Complex', unlocked: true, completed: false, lastSector: 1, bestScore: 0 },
-                    { id: 'map4', title: 'Neural Core', unlocked: true, completed: false, lastSector: 1, bestScore: 0 }
+                    { id: 'map1', title: 'Stage Alpha', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+                    { id: 'map2', title: 'Escape Vault', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+                    { id: 'map3', title: 'Complex Delta', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+                    { id: 'map4', title: 'Main Core', unlocked: true, completed: false, lastStage: 1, bestScore: 0 }
                 ],
                 createdAt: new Date()
             });
             saveMemoryData();
-            console.log(`Registration successful: Operative [${username}] added to local database.`);
+            console.log(`Registration successful: Player [${username}] added to local database.`);
         }
 
         res.status(201).json({ message: 'Player registered successfully' });
@@ -154,20 +154,20 @@ exports.login = async (req, res) => {
             return res.status(401).json({ error: 'Invalid username or password' });
         }
 
-        // Ensure maps are initialized for the operative
+        // Ensure maps are initialized for the player
         if (!player.maps || player.maps.length === 0) {
             player.maps = isDbConnected ? (await Map.find().sort({ order: 1 })).map(m => ({
                 id: m.id,
                 title: m.title,
                 unlocked: m.unlockedByDefault,
                 completed: false,
-                lastSector: 1,
+                lastStage: 1,
                 bestScore: 0
             })) : [
-                { id: 'map1', title: 'Sector Alpha', unlocked: true, completed: false, lastSector: 1, bestScore: 0 },
-                { id: 'map2', title: 'Tactical Vault', unlocked: true, completed: false, lastSector: 1, bestScore: 0 },
-                { id: 'map3', title: 'Delta Complex', unlocked: true, completed: false, lastSector: 1, bestScore: 0 },
-                { id: 'map4', title: 'Neural Core', unlocked: true, completed: false, lastSector: 1, bestScore: 0 }
+                { id: 'map1', title: 'Stage Alpha', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+                { id: 'map2', title: 'Escape Vault', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+                { id: 'map3', title: 'Complex Delta', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+                { id: 'map4', title: 'Main Core', unlocked: true, completed: false, lastStage: 1, bestScore: 0 }
             ];
             if (!isDbConnected) saveMemoryData();
             else await player.save();
@@ -210,12 +210,10 @@ exports.getLeaderboard = async (req, res) => {
         if (isDbConnected) {
             leaderboard = await Player.find()
                 .sort({ totalScore: -1 })
-                .limit(10)
                 .select('username totalScore highestLevel');
         } else {
             leaderboard = [...memoryPlayers]
                 .sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0))
-                .slice(0, 10)
                 .map(p => ({
                     username: p.username,
                     totalScore: p.totalScore,
@@ -238,10 +236,10 @@ exports.getMaps = async (req, res) => {
         } else {
             console.log('[Fallback] Serving static map data...');
             const fallbackMaps = [
-                { id: 'map1', title: 'Sector Alpha', unlockedByDefault: true, order: 1 },
-                { id: 'map2', title: 'Tactical Vault', unlockedByDefault: true, order: 2 },
-                { id: 'map3', title: 'Delta Complex', unlockedByDefault: true, order: 3 },
-                { id: 'map4', title: 'Neural Core', unlockedByDefault: true, order: 4 }
+                { id: 'map1', title: 'Stage Alpha', unlockedByDefault: true, order: 1 },
+                { id: 'map2', title: 'Escape Vault', unlockedByDefault: true, order: 2 },
+                { id: 'map3', title: 'Complex Delta', unlockedByDefault: true, order: 3 },
+                { id: 'map4', title: 'Main Core', unlockedByDefault: true, order: 4 }
             ];
             res.status(200).json(fallbackMaps);
         }
@@ -326,12 +324,12 @@ exports.updateGameState = async (req, res) => {
             if (mIndex !== -1) {
                 player.maps[mIndex].bestScore = Math.max(player.maps[mIndex].bestScore, score || 0);
 
-                // Save sector progress
+                // Save stage progress
                 if (level) {
-                    player.maps[mIndex].lastSector = level;
+                    player.maps[mIndex].lastStage = level;
                 }
 
-                // Unlock next map if this one is successfully completed (reaching sector 5)
+                // Unlock next map if this one is successfully completed (reaching stage 5)
                 if (level >= 5 && !player.maps[mIndex].completed) {
                     player.maps[mIndex].completed = true;
                     if (mIndex < player.maps.length - 1) {

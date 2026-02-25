@@ -4,108 +4,122 @@
     "totalScore": 2500,
     "highestLevel": 5,
     "password": "x",
-    "bio": "Senior stealth operative."
+    "bio": "Senior stealth operative.",
+    "maps": [
+      {
+        "id": "map1",
+        "title": "Stage Alpha",
+        "unlocked": true,
+        "completed": false,
+        "lastStage": 1,
+        "bestScore": 0
+      },
+      {
+        "id": "map2",
+        "title": "Escape Vault",
+        "unlocked": true,
+        "completed": false,
+        "lastStage": 1,
+        "bestScore": 0
+      },
+      {
+        "id": "map3",
+        "title": "Complex Delta",
+        "unlocked": true,
+        "completed": false,
+        "lastStage": 1,
+        "bestScore": 0
+      },
+      {
+        "id": "map4",
+        "title": "Main Core",
+        "unlocked": true,
+        "completed": false,
+        "lastStage": 1,
+        "bestScore": 0
+      }
+    ]
   },
   {
     "username": "Shadow",
     "totalScore": 1800,
     "highestLevel": 3,
     "password": "x",
-    "bio": "Infiltration specialist."
+    "bio": "Infiltration specialist.",
+    "maps": [
+      {
+        "id": "map1",
+        "title": "Stage Alpha",
+        "unlocked": true,
+        "completed": false,
+        "lastStage": 1,
+        "bestScore": 0
+      },
+      {
+        "id": "map2",
+        "title": "Escape Vault",
+        "unlocked": true,
+        "completed": false,
+        "lastStage": 1,
+        "bestScore": 0
+      },
+      {
+        "id": "map3",
+        "title": "Complex Delta",
+        "unlocked": false,
+        "completed": false,
+        "lastStage": 1,
+        "bestScore": 0
+      },
+      {
+        "id": "map4",
+        "title": "Main Core",
+        "unlocked": false,
+        "completed": false,
+        "lastStage": 1,
+        "bestScore": 0
+      }
+    ]
   },
   {
     "username": "Pulse",
     "totalScore": 1200,
     "highestLevel": 2,
     "password": "x",
-    "bio": "New recruit."
-  },
-  {
-    "username": "testuser",
-    "password": "$2b$10$uo3p0IbX5nf.wopIoFmpb.YrLeBMPdRtIUovliz/3UOKI5gXU2.FO",
-    "totalSolved": 0,
-    "correctAnswers": 0,
-    "accuracy": 0,
-    "highestLevel": 1,
-    "totalScore": 0,
-    "createdAt": "2026-02-18T17:40:51.980Z"
-  },
-  {
-    "username": "diag_user",
-    "password": "$2b$10$mmwRwk/u6L.cfIdVMAqlJechb67BvOldRogsU8.hW4mrTBuS7YKlq",
-    "totalSolved": 0,
-    "correctAnswers": 0,
-    "accuracy": 0,
-    "highestLevel": 1,
-    "totalScore": 0,
-    "createdAt": "2026-02-18T17:45:53.718Z"
-  },
-  {
-    "username": "sdd",
-    "password": "$2b$10$fK6MPbloEvxg7kjDR.n4YOVgaInDhhtkULch/QfX.alTkVi7SsK/W",
-    "email": "",
-    "totalSolved": 5,
-    "correctAnswers": 1,
-    "accuracy": 20,
-    "highestLevel": 10,
-    "totalScore": 6950,
-    "createdAt": "2026-02-18T17:48:26.166Z",
-    "bio": "hello"
-  },
-  {
-    "username": "abcd",
-    "password": "$2b$10$ACTHs5eqtLTMJZqv5GToW.xyceV31G9cZeFgfw4tUz1ReDHw9uueW",
-    "email": "abc@gmail.com",
-    "totalSolved": 0,
-    "correctAnswers": 0,
-    "accuracy": 0,
-    "highestLevel": 1,
-    "totalScore": 0,
-    "createdAt": "2026-02-18T18:52:08.660Z"
-  },
-  {
-    "username": "name1",
-    "password": "$2b$10$3UfyUJPYrcBNHWF9ZkPfIuJ0xr/Yh46xLD0uwrEbh8aBuboqVVdUC",
-    "email": "",
-    "totalSolved": 37,
-    "correctAnswers": 17,
-    "accuracy": 45.94594594594595,
-    "highestLevel": 10,
-    "totalScore": 6600,
+    "bio": "New recruit.",
     "maps": [
       {
         "id": "map1",
-        "title": "Sector Alpha",
+        "title": "Stage Alpha",
         "unlocked": true,
-        "completed": true,
-        "lastSector": 6,
-        "bestScore": 400
+        "completed": false,
+        "lastStage": 1,
+        "bestScore": 0
       },
       {
         "id": "map2",
-        "title": "Tactical Vault",
-        "unlocked": true,
-        "completed": true,
-        "lastSector": 10,
-        "bestScore": 900
+        "title": "Escape Vault",
+        "unlocked": false,
+        "completed": false,
+        "lastStage": 1,
+        "bestScore": 0
       },
       {
         "id": "map3",
-        "title": "Delta Complex",
-        "unlocked": true,
+        "title": "Complex Delta",
+        "unlocked": false,
         "completed": false,
-        "lastSector": 1,
+        "lastStage": 1,
         "bestScore": 0
       },
       {
         "id": "map4",
-        "title": "Neural Core",
-        "unlocked": true,
+        "title": "Main Core",
+        "unlocked": false,
         "completed": false,
-        "lastSector": 1,
+        "lastStage": 1,
         "bestScore": 0
       }
-    ],
-    "createdAt": "2026-02-20T16:26:06.728Z"
+    ]
   }
 ]

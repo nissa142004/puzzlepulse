@@ -44,13 +44,13 @@ function MapCard({ map, onDeploy }) {
             onMouseLeave={() => { setIsHovering(false); setTilt({ x: 0, y: 0 }); }}
         >
             <div className="map-badge" style={{ color: isLocked ? '#888' : 'var(--neon-cyan)' }}>
-                {isLocked ? 'CLASSIFIED' : 'MAP ACTIVE'}
+                {isLocked ? 'LOCKED' : 'READY'}
             </div>
 
             <div>
                 <h3 className={!isLocked ? 'glow-text' : ''}>{map.title}</h3>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>
-                    {isLocked ? 'Complete previous map to unlock access.' : 'Select mission difficulty and deploy.'}
+                    {isLocked ? 'Complete previous map to unlock access.' : 'Select difficulty and start playing.'}
                 </p>
 
                 {!isLocked && (
@@ -84,7 +84,7 @@ function MapCard({ map, onDeploy }) {
                 <div>
                     <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', marginBottom: '0.2rem', color: 'var(--text-dim)' }}>Progress</p>
                     <p className="glow-text" style={{ fontSize: '0.9rem', color: map.completed ? 'var(--neon-cyan)' : 'white' }}>
-                        {map.completed ? 'COMPLETED' : `LEVEL ${map.lastSector || 1}`}
+                        {map.completed ? 'COMPLETED' : `STAGE ${map.lastStage || 1}`}
                     </p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -99,7 +99,7 @@ function MapCard({ map, onDeploy }) {
                 onClick={() => onDeploy(map, difficulty)}
                 style={{ width: '100%', marginTop: '1.5rem', py: '0.5rem' }}
             >
-                {isLocked ? 'LOCKED' : 'DEPLOY'}
+                {isLocked ? 'LOCKED' : 'PLAY'}
             </button>
 
             {isLocked && (

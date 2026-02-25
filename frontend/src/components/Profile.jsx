@@ -30,7 +30,7 @@ function Profile({ user, onUpdateUser }) {
 
     return (
         <div className="main-content animate-fade">
-            <h1 className="glow-text">Operative Status</h1>
+            <h1 className="glow-text">Player Profile</h1>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginTop: '2rem' }}>
                 {/* Left Side: Premium Card */}
@@ -41,24 +41,24 @@ function Profile({ user, onUpdateUser }) {
                 {/* Right Side: Bio & Actions */}
                 <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <h3 className="glow-text">Mission Logistics</h3>
+                        <h3 className="glow-text">Account Settings</h3>
                         <button className="secondary" onClick={() => setEditing(!editing)}>
-                            {editing ? 'Cancel' : 'Update Credentials'}
+                            {editing ? 'Cancel' : 'Update Profile'}
                         </button>
                     </div>
 
                     <div>
                         {editing ? (
                             <form onSubmit={handleUpdate} className="animate-fade">
-                                <label style={{ color: 'var(--neon-cyan)', fontSize: '0.8rem' }}>ENCRYPTED EMAIL</label>
+                                <label style={{ color: 'var(--neon-cyan)', fontSize: '0.8rem' }}>EMAIL ADDRESS</label>
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="operative@network.com"
+                                    placeholder="player@example.com"
                                     className="mono-input"
                                 />
-                                <label style={{ color: 'var(--neon-cyan)', fontSize: '0.8rem', marginTop: '1rem', display: 'block' }}>OPERATIVE BIO</label>
+                                <label style={{ color: 'var(--neon-cyan)', fontSize: '0.8rem', marginTop: '1rem', display: 'block' }}>PLAYER BIOGRAPHY</label>
                                 <textarea
                                     className="mono-input"
                                     style={{
@@ -68,10 +68,10 @@ function Profile({ user, onUpdateUser }) {
                                     }}
                                     value={bio}
                                     onChange={(e) => setBio(e.target.value)}
-                                    placeholder="Tell us about your stealth expertise..."
+                                    placeholder="Tell us about yourself..."
                                 />
                                 <button type="submit" className="primary" style={{ width: '100%', marginTop: '1rem' }} disabled={saving}>
-                                    {saving ? 'UPLOADING...' : 'COMMIT CHANGES'}
+                                    {saving ? 'SAVING...' : 'SAVE CHANGES'}
                                 </button>
                             </form>
                         ) : (
@@ -83,7 +83,7 @@ function Profile({ user, onUpdateUser }) {
                                 <div>
                                     <p style={{ color: 'var(--text-dim)', fontSize: '0.7rem', textTransform: 'uppercase' }}>Biography</p>
                                     <p style={{ color: 'var(--text)', whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
-                                        {user.bio || 'No bio available. Operative chooses to remain mysterious.'}
+                                        {user.bio || 'No bio available. Add one to let others know who you are.'}
                                     </p>
                                 </div>
                             </div>
@@ -92,7 +92,7 @@ function Profile({ user, onUpdateUser }) {
                     </div>
 
                     <div style={{ marginTop: 'auto', paddingTop: '2rem', borderTop: '1px solid var(--border)', fontSize: '0.7rem', opacity: 0.5 }}>
-                        DANGER: ACCESSING LEVEL 4 CLEARANCE DATA. UNAUTHORIZED VIEWING IS PUNISHABLE BY LAW.
+                        DANGER: ACCESSING PLAYER DATA. UNAUTHORIZED VIEWING IS PROHIBITED.
                     </div>
                 </div>
             </div>

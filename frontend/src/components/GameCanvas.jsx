@@ -22,7 +22,7 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
     };
 
     const [stats, setStats] = useState({
-        level: map?.lastSector || 1,
+        level: map?.lastStage || 1,
         score: 0,
         lives: getInitialLives()
     });

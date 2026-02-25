@@ -52,9 +52,9 @@ function App() {
             </div>
             <div className="nav-links">
                 <button className={`nav-link ${view === 'dashboard' ? 'active' : ''}`} onClick={() => setView('dashboard')} style={{ background: 'none', border: 'none' }}>Dashboard</button>
-                <button className={`nav-link ${view === 'game' ? 'active' : ''}`} onClick={() => setView('game')} disabled={!currentMap} style={{ background: 'none', border: 'none', opacity: currentMap ? 1 : 0.4 }}>Active Scan</button>
+                <button className={`nav-link ${view === 'game' ? 'active' : ''}`} onClick={() => setView('game')} disabled={!currentMap} style={{ background: 'none', border: 'none', opacity: currentMap ? 1 : 0.4 }}>Play Game</button>
                 <button className={`nav-link ${view === 'leaderboard' ? 'active' : ''}`} onClick={() => setView('leaderboard')} style={{ background: 'none', border: 'none' }}>Ranking</button>
-                <button className={`nav-link ${view === 'profile' ? 'active' : ''}`} onClick={() => setView('profile')} style={{ background: 'none', border: 'none' }}>Operative</button>
+                <button className={`nav-link ${view === 'profile' ? 'active' : ''}`} onClick={() => setView('profile')} style={{ background: 'none', border: 'none' }}>Player</button>
             </div>
             <button onClick={handleLogout} className="secondary" style={{ padding: '0.4rem 1rem' }}>Exit</button>
         </nav>
@@ -92,7 +92,7 @@ function App() {
                 <>
                     {renderNavbar()}
                     {view === 'dashboard' && <Dashboard user={user} onStartGame={handleStartGame} />}
-                    {view === 'leaderboard' && <Leaderboard />}
+                    {view === 'leaderboard' && <Leaderboard user={user} />}
                     {view === 'profile' && <Profile user={user} onUpdateUser={setUser} />}
                     {view === 'game' && (() => {
                         const activeMap = user.maps?.find(m => m.id === currentMap?.id) || currentMap;

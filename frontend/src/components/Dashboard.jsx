@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Terminal, Cpu, Zap, BarChart3, Target, Shield, ChevronRight } from 'lucide-react';
 import MapCard from './MapCard';
 import AnalyticsWidget from './AnalyticsWidget';
 
@@ -11,7 +12,7 @@ function Dashboard({ user, onStartGame }) {
             try {
                 // If user already has map progress, we use that. 
                 // However, we want to ensure any NEW global maps are visible.
-                const response = await axios.get('http://localhost:5000/api/maps');
+                const response = await axios.get('/api/maps');
                 const dbMaps = response.data;
 
                 if (!user.maps || user.maps.length === 0) {
@@ -19,7 +20,7 @@ function Dashboard({ user, onStartGame }) {
                         ...m,
                         unlocked: m.unlockedByDefault,
                         completed: false,
-                        lastSector: 1,
+                        lastStage: 1,
                         bestScore: 0
                     })));
                 } else {
@@ -31,7 +32,7 @@ function Dashboard({ user, onStartGame }) {
                             ...dbM,
                             unlocked: userM ? userM.unlocked : dbM.unlockedByDefault,
                             completed: userM ? userM.completed : false,
-                            lastSector: userM ? userM.lastSector : 1,
+                            lastStage: userM ? userM.lastStage : 1,
                             bestScore: userM ? userM.bestScore : 0
                         };
                     });
@@ -46,60 +47,64 @@ function Dashboard({ user, onStartGame }) {
     }, [user.maps]);
 
     const mapsToDisplay = availableMaps.length > 0 ? availableMaps : [
-        { id: 'map1', title: 'Sector Alpha', unlocked: true, completed: false, lastSector: 1, bestScore: 0 },
-        { id: 'map2', title: 'Tactical Vault', unlocked: true, completed: false, lastSector: 1, bestScore: 0 },
-        { id: 'map3', title: 'Delta Complex', unlocked: true, completed: false, lastSector: 1, bestScore: 0 },
-        { id: 'map4', title: 'Neural Core', unlocked: true, completed: false, lastSector: 1, bestScore: 0 }
+        { id: 'map1', title: 'Stage Alpha', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+        { id: 'map2', title: 'Escape Vault', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+        { id: 'map3', title: 'Complex Delta', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
+        { id: 'map4', title: 'Main Core', unlocked: true, completed: false, lastStage: 1, bestScore: 0 }
     ];
+
+    const unlockedCount = availableMaps.filter(m => m.unlocked).length;
+    const completionRate = Math.round((availableMaps.filter(m => m.completed).length / availableMaps.length) * 100);
 
     return (
         <div className="main-content animate-fade">
-            <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+            <header style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '1px solid var(--border)', paddingBottom: '1.5rem' }}>
                 <div>
-                    <h1 className="glow-text">Campaign Mode</h1>
-                    <p style={{ color: 'var(--text-dim)' }}>Player: <strong>{user.username}</strong> | Status: Ready</p>
+                    <h1 className="glow-text" style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Player Hub</h1>
+                    <p style={{ color: 'var(--text-dim)', letterSpacing: '1px' }}>
+                        PLAYER: <strong style={{ color: 'var(--neon-cyan)' }}>{user.username}</strong> |
+                        STATUS: <span style={{ color: '#00ff00' }}>ONLINE</span>
+                    </p>
                 </div>
                 <div className="hud-v2">
-                    <div className="hud-item">
-                        <span className="hud-label">Total Score</span>
-                        <span className="hud-value">{user.totalScore || 0}</span>
+                    <div className="hud-item" style={{ borderLeft: '2px solid var(--neon-cyan)', paddingLeft: '1rem' }}>
+                        <span className="hud-label">TOTAL SYNC</span>
+                        <span className="hud-value">{user.totalScore?.toLocaleString() || 0}</span>
                     </div>
-                    <div className="hud-item">
-                        <span className="hud-label">Accuracy</span>
+                    <div className="hud-item" style={{ borderLeft: '2px solid var(--neon-pink)', paddingLeft: '1rem' }}>
+                        <span className="hud-label">ACCURACY</span>
                         <span className="hud-value">{Math.round(user.accuracy || 0)}%</span>
                     </div>
                 </div>
             </header>
 
-            <section>
-                <h2 style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <span style={{ color: 'var(--neon-cyan)', fontSize: '0.8rem' }}>▶</span> SELECT MISSION
+            <section style={{ marginBottom: '4rem' }}>
+                <h2 style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '15px', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '1.1rem' }}>
+                    <Shield size={20} color="var(--neon-cyan)" /> Select Stage
                 </h2>
-                <div style={{ padding: '0 1rem' }}>
-                    <div className="map-selection">
-                        {mapsToDisplay.map(m => (
-                            <MapCard
-                                key={m.id}
-                                map={m}
-                                onDeploy={(map, difficulty) => onStartGame(map, difficulty)}
-                            />
-                        ))}
-                    </div>
+                <div className="map-selection" style={{ padding: '0.5rem 0' }}>
+                    {mapsToDisplay.map(m => (
+                        <MapCard
+                            key={m.id}
+                            map={m}
+                            onDeploy={(map, difficulty) => onStartGame(map, difficulty)}
+                        />
+                    ))}
                 </div>
             </section>
 
-            <section style={{ marginTop: '5rem' }}>
-                <h2 style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <span style={{ color: 'var(--neon-pink)', fontSize: '0.8rem' }}>▶</span> PLAYER PERFORMANCE
+            <section style={{ marginBottom: '4rem' }}>
+                <h2 style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '15px', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '1.1rem' }}>
+                    <BarChart3 size={20} color="var(--neon-pink)" /> Game Analytics
                 </h2>
-                <div className="dashboard-grid">
+                <div className="dashboard-grid" style={{ padding: '0' }}>
                     <AnalyticsWidget
-                        title="Accuracy Level"
+                        title="Neural Accuracy"
                         data={[45, 52, 48, 70, 65, 85, 92]}
                         color="var(--neon-cyan)"
                     />
                     <AnalyticsWidget
-                        title="Average Speed"
+                        title="Infiltration Speed"
                         data={[30, 45, 60, 55, 75, 80, 95]}
                         color="var(--neon-pink)"
                     />
@@ -111,11 +116,17 @@ function Dashboard({ user, onStartGame }) {
                 </div>
             </section>
 
-            <div className="glass-panel" style={{ marginTop: '4rem', borderLeft: '4px solid var(--neon-cyan)' }}>
-                <h3 className="glow-text">Mission Briefing</h3>
-                <p style={{ marginTop: '0.5rem', color: 'var(--text-dim)', fontSize: '0.9rem' }}>
-                    Choose a sector and start a mission. Higher difficulties award more points but have stricter detection protocols.
-                </p>
+            <div className="glass-panel" style={{ marginTop: '2rem', borderLeft: '5px solid var(--neon-cyan)', padding: '2rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                        <h3 className="glow-text" style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>PLAYER BRIEFING</h3>
+                        <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem', maxWidth: '800px' }}>
+                            Choose a stage and start playing. Higher difficulties award more points but have stricter rules.
+                            Synchronize your score with HQ to see your rank.
+                        </p>
+                    </div>
+                    <Terminal size={40} color="var(--border)" style={{ opacity: 0.5 }} />
+                </div>
             </div>
         </div>
     );
