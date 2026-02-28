@@ -28,6 +28,14 @@ npm install
 npm run dev
 ```
 
+### 3. Tactical Cloud Deployment (Vercel)
+The project is pre-configured for Vercel. 
+1. Push this repository to GitHub/GitLab/Bitbucket.
+2. Import the project in Vercel.
+3. Configure Environment Variables in Vercel Dashboard:
+   - `MONGODB_URI`: Your MongoDB Atlas connection string.
+4. Deploy.
+
 ## 🧠 System Architecture
 
 - **Low Coupling**: Independent microservices for game logic and operative management.
