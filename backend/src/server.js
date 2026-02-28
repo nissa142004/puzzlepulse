@@ -40,12 +40,7 @@ mongoose.connect(MONGODB_URI)
         console.log('System operating in high-availability fallback mode (Local JSON).');
     });
 
-// Start Server handles local development
-if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`[HQ] Server authenticated and running on port ${PORT}`);
-    });
-}
-
-// Export for Vercel serverless function
-module.exports = app;
+// Start Server
+app.listen(PORT, () => {
+    console.log(`[HQ] Server authenticated and running on port ${PORT}`);
+});
