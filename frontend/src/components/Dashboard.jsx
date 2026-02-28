@@ -13,9 +13,9 @@ function Dashboard({ user, onStartGame }) {
                 // If user already has map progress, we use that. 
                 // However, we want to ensure any NEW global maps are visible.
                 const response = await axios.get('/api/maps');
-                const dbMaps = response.data;
+                const dbMaps = Array.isArray(response.data) ? response.data : [];
 
-                if (!user.maps || user.maps.length === 0) {
+                if (!Array.isArray(user.maps) || user.maps.length === 0) {
                     setAvailableMaps(dbMaps.map((m, idx) => ({
                         ...m,
                         unlocked: idx === 0,
@@ -35,16 +35,18 @@ function Dashboard({ user, onStartGame }) {
                         return {
                             ...dbM,
                             title: sectorNames[idx] || dbM.title,
-                            unlocked: isUnlocked,
-                            completed: userM ? userM.completed : false,
-                            lastStage: userM ? Math.max(userM.lastStage, idx * 4 + 1) : idx * 4 + 1,
-                            bestScore: userM ? userM.bestScore : 0
+                            unlocked: !!isUnlocked,
+                            completed: userM ? !!userM.completed : false,
+                            lastStage: userM ? Math.max(userM.lastStage || 0, idx * 4 + 1) : idx * 4 + 1,
+                            bestScore: userM ? (userM.bestScore || 0) : 0
                         };
                     });
                     setAvailableMaps(merged);
                 }
             } catch (error) {
                 console.error('Error syncing maps with HQ:', error.message);
+                // Fallback to local user maps or defaults
+                setAvailableMaps(user.maps || []);
             }
         };
 
