@@ -8,9 +8,10 @@ import LifePopup from './LifePopup';
  * GameCanvas Component.
  * Demonstrates theme: Event-driven programming (Movement, Canvas loops).
  */
-const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
+const GameCanvas = ({ user, map, difficulty, onUpdateUser, onBackToHome }) => {
     const canvasRef = useRef(null);
     const [gameState, setGameState] = useState('playing'); // playing, puzzle, gameOver, levelCleared, missionComplete
+    const [isPaused, setIsPaused] = useState(false);
     const [player, setPlayer] = useState({ x: 50, y: 50, radius: 12, speed: 6.5 });
     const [guards, setGuards] = useState([]);
 
@@ -96,7 +97,14 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
 
     // Restore Key Listeners
     useEffect(() => {
-        const handleKeyDown = (e) => keys.current[e.key] = true;
+        const handleKeyDown = (e) => {
+            keys.current[e.key] = true;
+            if (e.key === 'Escape' || e.key === 'p' || e.key === 'P') {
+                if (gameState === 'playing') {
+                    setIsPaused(prev => !prev);
+                }
+            }
+        };
         const handleKeyUp = (e) => keys.current[e.key] = false;
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
@@ -107,7 +115,7 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
     }, []);
 
     const update = () => {
-        if (gameState !== 'playing' || showLifeLost) return;
+        if (gameState !== 'playing' || showLifeLost || isPaused) return;
 
         // Player movement
         let nextX = player.x;
@@ -401,9 +409,30 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser }) => {
                     <span className="hud-label">SYNC SCORE</span>
                     <span className="hud-value">{Math.floor(stats.score)}</span>
                 </div>
+                <div className="hud-item" style={{ marginLeft: '1rem', borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: '1rem' }}>
+                    <button
+                        className="secondary"
+                        style={{ padding: '0.2rem 0.6rem', fontSize: '0.8rem', minWidth: 'auto' }}
+                        onClick={() => setIsPaused(true)}
+                    >
+                        PAUSE
+                    </button>
+                </div>
             </div>
 
             <canvas ref={canvasRef} width={800} height={500} style={{ display: 'block', borderRadius: '4px' }} />
+
+            {isPaused && (
+                <div className="overlay animate-fade" style={{ background: 'rgba(0,0,0,0.85)', zIndex: 100 }}>
+                    <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center', borderTop: `4px solid ${currentTheme.primary}`, minWidth: '300px' }}>
+                        <h2 className="glow-text" style={{ color: currentTheme.primary, fontSize: '3rem', marginBottom: '2rem' }}>PAUSED</h2>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center' }}>
+                            <button className="primary pulse-animation" style={{ width: '200px' }} onClick={() => setIsPaused(false)}>RESUME</button>
+                            <button className="secondary" style={{ width: '200px' }} onClick={() => onBackToHome()}>BACK TO HUB</button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {gameState === 'puzzle' && <PuzzleModal onSolve={handlePuzzleResult} themeColor={currentTheme.primary} />}
             {showLifeLost && <LifePopup lives={stats.lives} onClose={() => setShowLifeLost(false)} />}

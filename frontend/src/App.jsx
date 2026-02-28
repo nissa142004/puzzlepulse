@@ -114,10 +114,16 @@ function App() {
                                         <h2 className="glow-text">{activeMap?.title || "Active Map"}</h2>
                                         <button className="secondary" onClick={() => setView('dashboard')}>Return to Hub</button>
                                     </div>
-                                    <GameCanvas user={user} map={activeMap} difficulty={difficulty} onUpdateUser={(updated) => {
-                                        setUser(updated);
-                                        localStorage.setItem('puzzlePulseUser', JSON.stringify(updated));
-                                    }} />
+                                    <GameCanvas
+                                        user={user}
+                                        map={activeMap}
+                                        difficulty={difficulty}
+                                        onUpdateUser={(updated) => {
+                                            setUser(updated);
+                                            localStorage.setItem('puzzlePulseUser', JSON.stringify(updated));
+                                        }}
+                                        onBackToHome={() => setView('dashboard')}
+                                    />
                                 </div>
                             </div>
                         );
