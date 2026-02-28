@@ -91,7 +91,7 @@ function App() {
                     )}
                 </div>
             ) : (
-                <div className="main-wrapper animate-fade" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <>
                     {renderNavbar()}
                     {view === 'dashboard' && <Dashboard user={user} onStartGame={handleStartGame} />}
                     {view === 'leaderboard' && <Leaderboard user={user} />}
@@ -122,7 +122,7 @@ function App() {
                             </div>
                         );
                     })()}
-                </div>
+                </>
             )}
         </div>
     );
