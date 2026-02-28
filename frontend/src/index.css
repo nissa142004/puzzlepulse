@@ -645,6 +645,34 @@ input:focus {
   }
 }
 
-.pulse-cyan {
-  animation: neon-pulse 2s infinite;
+/* Game Window Layout */
+.game-window-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.game-main-area {
+  flex: 1;
+  position: relative;
+}
+
+.game-side-panel {
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (max-width: 1200px) {
+  .game-window-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .game-side-panel {
+    width: 100%;
+    max-width: 800px;
+  }
 }

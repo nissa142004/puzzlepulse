@@ -8,7 +8,7 @@ import LifePopup from './LifePopup';
  * GameCanvas Component.
  * Demonstrates theme: Event-driven programming (Movement, Canvas loops).
  */
-const GameCanvas = ({ user, map, difficulty, onUpdateUser, onBackToHome }) => {
+const GameCanvas = ({ user, map, difficulty, onUpdateUser, onBackToHome, onStatsChange }) => {
     const canvasRef = useRef(null);
     const [gameState, setGameState] = useState('playing'); // playing, puzzle, gameOver, levelCleared, missionComplete
     const [isPaused, setIsPaused] = useState(false);
@@ -27,6 +27,12 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser, onBackToHome }) => {
         score: 0,
         lives: getInitialLives()
     });
+
+    useEffect(() => {
+        if (onStatsChange) {
+            onStatsChange(stats);
+        }
+    }, [stats, onStatsChange]);
     const [showLifeLost, setShowLifeLost] = useState(false);
 
     const keys = useRef({});
@@ -390,36 +396,6 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser, onBackToHome }) => {
             }}
         >
             {/* HUD and Canvas... */}
-            <div className="hud-v2" style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 10 }}>
-                <div className="hud-item">
-                    <span className="hud-label">FLOOR</span>
-                    <span className="hud-value">{((stats.level - 1) % 4) + 1} / 4</span>
-                </div>
-                <div className="hud-item">
-                    <span className="hud-label">MISSION</span>
-                    <span className="hud-value" style={{ color: currentTheme.primary }}>LV {stats.level}</span>
-                </div>
-                <div className="hud-item">
-                    <span className="hud-label">HULL SYNC</span>
-                    <span className="hud-value" style={{ color: stats.lives === 1 ? 'var(--neon-pink)' : currentTheme.primary }}>
-                        {stats.lives}
-                    </span>
-                </div>
-                <div className="hud-item">
-                    <span className="hud-label">SYNC SCORE</span>
-                    <span className="hud-value">{Math.floor(stats.score)}</span>
-                </div>
-                <div className="hud-item" style={{ marginLeft: '1rem', borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: '1rem' }}>
-                    <button
-                        className="secondary"
-                        style={{ padding: '0.2rem 0.6rem', fontSize: '0.8rem', minWidth: 'auto' }}
-                        onClick={() => setIsPaused(true)}
-                    >
-                        PAUSE
-                    </button>
-                </div>
-            </div>
-
             <canvas ref={canvasRef} width={800} height={500} style={{ display: 'block', borderRadius: '4px' }} />
 
             {isPaused && (
