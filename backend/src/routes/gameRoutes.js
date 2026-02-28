@@ -5,13 +5,13 @@ const authController = require('../controllers/authController');
 const gameController = require('../controllers/gameController');
 
 // Authentication
-router.post('/auth/register', authController.register);
-router.post('/auth/login', authController.login);
+router.post('/register', authController.register);
+router.post('/login', authController.login);
 
 // Player Profile & Leaderboard
 router.get('/player/:username', playerController.getPlayerStats);
 router.get('/leaderboard', playerController.getLeaderboard);
-router.put('/player/:username', playerController.updateProfile);
+router.post('/player/:username', playerController.updateProfile);
 
 // Gameplay
 router.get('/maps', gameController.getMaps);
