@@ -41,10 +41,6 @@ mongoose.connect(MONGODB_URI)
     });
 
 // Start Server
-if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`[HQ] Server authenticated and running on port ${PORT}`);
-    });
-}
-
-module.exports = app;
+app.listen(PORT, () => {
+    console.log(`[HQ] Server authenticated and running on port ${PORT}`);
+});
