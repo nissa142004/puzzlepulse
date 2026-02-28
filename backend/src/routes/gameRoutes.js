@@ -10,7 +10,6 @@ router.post('/login', authController.login);
 
 // Player Profile & Leaderboard
 router.get('/player/:username', playerController.getPlayerStats);
-router.put('/player/:username', playerController.updateProfile);
 router.get('/leaderboard', playerController.getLeaderboard);
 router.post('/player/:username', playerController.updateProfile);
 

@@ -12,12 +12,7 @@ if (!fs.existsSync(path.join(__dirname, '../../data'))) {
 // Load initial data
 try {
     if (fs.existsSync(DATA_FILE)) {
-        const content = fs.readFileSync(DATA_FILE, 'utf8');
-        if (content.trim()) {
-            memoryPlayers = JSON.parse(content);
-        } else {
-            throw new Error('Empty players.json');
-        }
+        memoryPlayers = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
     } else {
         const initialMaps = [
             { id: 'map1', title: 'Sector 1: Outer Hull', unlocked: true, completed: false, lastStage: 1, bestScore: 0 },
