@@ -1,315 +1,77 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
-import Guard from '../game/Guard';
 import PuzzleModal from './PuzzleModal';
 import LifePopup from './LifePopup';
 import GameOverOverlay from './GameOverOverlay';
 import MissionCompleteOverlay from './MissionCompleteOverlay';
 import PauseOverlay from './PauseOverlay';
 import LevelClearedOverlay from './LevelClearedOverlay';
+import { getThemeForMap } from '../game/gameConstants';
+import { drawBackground, drawStartPad, drawExitGate, drawWalls, drawPlayer } from '../game/gameRenderer';
+import useGameLoop from '../hooks/useGameLoop';
 
-/**
- * GameCanvas Component.
- * Demonstrates theme: Event-driven programming (Movement, Canvas loops).
- */
 const GameCanvas = ({ user, map, difficulty, onUpdateUser, onBackToHome, onStatsChange }) => {
     const canvasRef = useRef(null);
-    const [gameState, setGameState] = useState('playing'); // playing, puzzle, gameOver, levelCleared, missionComplete
+    const [gameState, setGameState] = useState('playing');
     const [isPaused, setIsPaused] = useState(false);
-    const [player, setPlayer] = useState({ x: 50, y: 50, radius: 12, speed: 6.5 });
-    const [guards, setGuards] = useState([]);
-
-    // Initial stats based on difficulty
-    const getInitialLives = () => {
-        if (difficulty === 'easy') return 5;
-        if (difficulty === 'hard') return 1;
-        return 3;
-    };
+    const [showLifeLost, setShowLifeLost] = useState(false);
 
     const [stats, setStats] = useState({
         level: map?.lastStage || 1,
         score: 0,
-        lives: getInitialLives()
+        lives: difficulty === 'easy' ? 5 : (difficulty === 'hard' ? 1 : 3)
     });
 
     useEffect(() => {
-        if (onStatsChange) {
-            onStatsChange(stats);
-        }
+        onStatsChange?.(stats);
     }, [stats, onStatsChange]);
-    const [showLifeLost, setShowLifeLost] = useState(false);
 
-    const keys = useRef({});
-    const requestRef = useRef();
+    const currentTheme = useMemo(() => getThemeForMap(map?.id), [map?.id]);
 
-    // Level Walls (Refined for space and exit clarity)
-    const levelWalls = {
-        1: [{ x: 300, y: 0, w: 20, h: 250 }, { x: 500, y: 250, w: 20, h: 250 }],
-        2: [{ x: 200, y: 50, w: 400, h: 20 }, { x: 200, y: 430, w: 400, h: 20 }],
-        3: [{ x: 400, y: 50, w: 20, h: 400 }, { x: 100, y: 250, w: 150, h: 20 }, { x: 550, y: 250, w: 150, h: 20 }],
-        4: [{ x: 150, y: 150, w: 100, h: 100 }, { x: 550, y: 150, w: 100, h: 100 }, { x: 350, y: 50, w: 100, h: 100 }, { x: 350, y: 350, w: 100, h: 100 }]
-    };
-
-    const currentWalls = levelWalls[((stats.level - 1) % 4) + 1] || levelWalls[1];
-
-    // Map Themes
-    const themes = {
-        map1: { primary: '#00fff2', bg: '#0d1117', grid: 'rgba(0, 255, 242, 0.1)' },
-        map2: { primary: '#ff007f', bg: '#1a0510', grid: 'rgba(255, 0, 127, 0.1)' },
-        map3: { primary: '#bc8cff', bg: '#0f051a', grid: 'rgba(188, 140, 255, 0.1)' },
-        map4: { primary: '#39ff14', bg: '#051a05', grid: 'rgba(57, 255, 20, 0.1)' }
-    };
-
-    const currentTheme = themes[map?.id] || themes.map1;
-
-    // Initialization: Balanced Difficulty Scaling
-    useEffect(() => {
-        const newGuards = [];
-
-        // Difficulty Level Multipliers (Eased significantly)
-        const diffMultipliers = {
-            easy: 0.4,
-            medium: 0.8,
-            hard: 1.3
-        };
-        const baseSpeedMod = diffMultipliers[difficulty] || 1.0;
-
-        // Fewer guards
-        const numGuards = stats.level === 1 ? 1 : Math.floor((1 + stats.level * 0.4) * (difficulty === 'hard' ? 1.3 : 1));
-
-        for (let i = 0; i < numGuards; i++) {
-            let x, y, overlap;
-            do {
-                overlap = false;
-                x = 150 + Math.random() * 550;
-                y = 50 + Math.random() * 400;
-                for (const wall of currentWalls) {
-                    if (x > wall.x - 20 && x < wall.x + wall.w + 20 && y > wall.y - 20 && y < wall.y + wall.h + 20) {
-                        overlap = true;
-                    }
-                }
-            } while (overlap);
-
-            const path = [
-                { x, y },
-                { x: 100 + Math.random() * 600, y: 50 + Math.random() * 400 },
-                { x: 100 + Math.random() * 600, y: 50 + Math.random() * 400 }
-            ];
-
-            // Speed scales: Level 1 on Easy will be ~0.5 speed, very slow
-            const baseLevelSpeed = 1.2 + (stats.level - 1) * 0.4;
-            const finalGuardSpeed = baseLevelSpeed * baseSpeedMod;
-
-            newGuards.push(new Guard(x, y, path, finalGuardSpeed));
+    const handleLevelExit = () => {
+        if (stats.level >= 16) {
+            setGameState('missionComplete');
+            handleLevelUpdate(true);
+        } else {
+            setGameState('levelCleared');
         }
-        setGuards(newGuards);
-    }, [stats.level, map, difficulty]);
+    };
 
-    // Restore Key Listeners
+    const { player, guards, currentWalls, resetPlayer, resetGuards } = useGameLoop(
+        gameState, isPaused, showLifeLost, stats, map, difficulty,
+        handleLevelExit,
+        () => setGameState('puzzle')
+    );
+
     useEffect(() => {
         const handleKeyDown = (e) => {
-            keys.current[e.key] = true;
-            if (e.key === 'Escape' || e.key === 'p' || e.key === 'P') {
-                if (gameState === 'playing') {
-                    setIsPaused(prev => !prev);
-                }
+            if ((e.key === 'Escape' || e.key === 'p' || e.key === 'P') && gameState === 'playing') {
+                setIsPaused(prev => !prev);
             }
         };
-        const handleKeyUp = (e) => keys.current[e.key] = false;
         window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('keyup', handleKeyUp);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('keyup', handleKeyUp);
-        };
-    }, []);
-
-    const update = () => {
-        if (gameState !== 'playing' || showLifeLost || isPaused) return;
-
-        // Player movement
-        let nextX = player.x;
-        let nextY = player.y;
-        if (keys.current['ArrowUp'] || keys.current['w']) nextY -= player.speed;
-        if (keys.current['ArrowDown'] || keys.current['s']) nextY += player.speed;
-        if (keys.current['ArrowLeft'] || keys.current['a']) nextX -= player.speed;
-        if (keys.current['ArrowRight'] || keys.current['d']) nextX += player.speed;
-
-        // Simple wall collision
-        let canMoveX = true;
-        let canMoveY = true;
-        for (const wall of currentWalls) {
-            if (nextX + player.radius > wall.x && nextX - player.radius < wall.x + wall.w &&
-                player.y + player.radius > wall.y && player.y - player.radius < wall.y + wall.h) {
-                canMoveX = false;
-            }
-            if (player.x + player.radius > wall.x && player.x - player.radius < wall.x + wall.w &&
-                nextY + player.radius > wall.y && nextY - player.radius < wall.y + wall.h) {
-                canMoveY = false;
-            }
-        }
-
-        const finalX = canMoveX ? Math.max(player.radius, Math.min(800 - player.radius, nextX)) : player.x;
-        const finalY = canMoveY ? Math.max(player.radius, Math.min(500 - player.radius, nextY)) : player.y;
-
-        if (finalX > 750) {
-            if (stats.level >= 16) {
-                setGameState('missionComplete');
-                handleLevelComplete(true);
-            } else {
-                setGameState('levelCleared');
-            }
-            return;
-        }
-
-        setPlayer({ ...player, x: finalX, y: finalY });
-
-        for (const guard of guards) {
-            guard.update(currentWalls);
-            if (guard.checkDetection(finalX, finalY)) {
-                console.log("[Game] Player DETECTED by guard.");
-                setGameState('puzzle');
-                return;
-            }
-        }
-
-        draw();
-        requestRef.current = requestAnimationFrame(update);
-    };
-
-    const draw = () => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-
-        // Background
-        ctx.fillStyle = currentTheme.bg;
-        ctx.fillRect(0, 0, 800, 500);
-
-        // Grid Background
-        ctx.strokeStyle = currentTheme.grid || 'rgba(0, 255, 242, 0.1)';
-        ctx.lineWidth = 1;
-        for (let i = 0; i < 800; i += 50) {
-            ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 500); ctx.stroke();
-        }
-        for (let j = 0; j < 500; j += 50) {
-            ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(800, j); ctx.stroke();
-        }
-
-        // Draw Start Pad (Entry Zone)
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-        ctx.fillRect(0, 0, 100, 500);
-        ctx.strokeStyle = currentTheme.primary;
-        ctx.lineWidth = 1;
-        ctx.strokeRect(5, 5, 90, 490);
-        ctx.fillStyle = currentTheme.primary;
-        ctx.font = 'bold 10px monospace';
-        ctx.fillText("ENTRY ZONE", 15, 20);
-
-        // Draw Exit Warp Gate
-        const warpPulse = Math.sin(Date.now() * 0.005) * 5 + 10;
-        const gradient = ctx.createLinearGradient(750, 0, 800, 0);
-        gradient.addColorStop(0, 'transparent');
-        gradient.addColorStop(1, currentTheme.primary);
-        ctx.fillStyle = gradient;
-        ctx.fillRect(750, 0, 50, 500);
-
-        ctx.strokeStyle = currentTheme.primary;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        for (let i = 0; i < 500; i += 20) {
-            ctx.moveTo(760 + warpPulse, i);
-            ctx.lineTo(790, i + 10);
-        }
-        ctx.stroke();
-
-        ctx.save();
-        ctx.translate(785, 250);
-        ctx.rotate(-Math.PI / 2);
-        ctx.fillStyle = currentTheme.primary;
-        ctx.font = 'bold 12px Orbitron, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText("EXIT GATE", 0, 0);
-        ctx.restore();
-
-        // Render Walls
-        ctx.fillStyle = '#161b22';
-        ctx.strokeStyle = currentTheme.primary;
-        ctx.lineWidth = 2;
-        for (const wall of currentWalls) {
-            ctx.fillRect(wall.x, wall.y, wall.w, wall.h);
-            ctx.strokeRect(wall.x, wall.y, wall.w, wall.h);
-
-            // Wall Glow Effect
-            ctx.save();
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = currentTheme.primary;
-            ctx.strokeRect(wall.x, wall.y, wall.w, wall.h);
-            ctx.restore();
-        }
-
-        // Guards
-        guards.forEach(guard => guard.draw(ctx));
-
-        // Player - "Little Man" Sprite
-        ctx.save();
-        ctx.translate(player.x, player.y);
-
-        // Dynamic Breathing/Idle effect
-        const breath = Math.sin(Date.now() * 0.005) * 2;
-
-        // Glow
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = currentTheme.primary;
-
-        // Head
-        ctx.beginPath();
-        ctx.arc(0, -15 + breath, 8, 0, Math.PI * 2);
-        ctx.fillStyle = currentTheme.primary;
-        ctx.fill();
-
-        // Body
-        ctx.beginPath();
-        ctx.roundRect(-8, -7 + breath, 16, 18, 5);
-        ctx.fillStyle = currentTheme.primary;
-        ctx.fill();
-
-        // Legs
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = currentTheme.primary;
-        ctx.lineCap = 'round';
-
-        // Left Leg
-        ctx.beginPath();
-        ctx.moveTo(-4, 11 + breath);
-        ctx.lineTo(-6, 22);
-        ctx.stroke();
-
-        // Right Leg
-        ctx.beginPath();
-        ctx.moveTo(4, 11 + breath);
-        ctx.lineTo(6, 22);
-        ctx.stroke();
-
-        // Visor/Eyes (Virtual Identity)
-        ctx.fillStyle = '#0a0a0a';
-        ctx.fillRect(-5, -17 + breath, 10, 3);
-
-        ctx.restore();
-    };
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [gameState]);
 
     useEffect(() => {
-        requestRef.current = requestAnimationFrame(update);
-        return () => cancelAnimationFrame(requestRef.current);
-    }, [gameState, player, guards, showLifeLost, currentTheme]);
+        const ctx = canvasRef.current?.getContext('2d');
+        if (!ctx) return;
 
-    const handleLevelComplete = async (isFinal = false) => {
-        const nextLevel = stats.level + 1;
+        drawBackground(ctx, currentTheme);
+        drawStartPad(ctx, currentTheme);
+        drawExitGate(ctx, currentTheme);
+        drawWalls(ctx, currentWalls, currentTheme);
+        guards.forEach(g => g.draw(ctx));
+        drawPlayer(ctx, player, currentTheme);
+    }, [player, guards, currentWalls, currentTheme]);
+
+    const handleLevelUpdate = async (isFinal = false) => {
         const levelScore = 100 * stats.level * (difficulty === 'hard' ? 2 : (difficulty === 'easy' ? 0.5 : 1));
+        const nextLevel = stats.level + 1;
 
         if (!isFinal) {
             setStats(prev => ({ ...prev, level: nextLevel, score: prev.score + levelScore }));
-            setPlayer({ ...player, x: 50, y: 50 });
+            resetPlayer();
         } else {
             setStats(prev => ({ ...prev, score: prev.score + levelScore }));
         }
@@ -330,9 +92,8 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser, onBackToHome, onStats
     const handlePuzzleResult = async (correct) => {
         if (correct) {
             setGameState('playing');
-            setPlayer(prev => ({ ...prev, x: Math.max(50, prev.x - 100) }));
-            // Reset guards to give player space after winning a puzzle
-            guards.forEach(g => g.reset());
+            resetPlayer(Math.max(50, player.x - 100));
+            resetGuards();
         } else {
             const newLives = stats.lives - 1;
             setShowLifeLost(true);
@@ -341,19 +102,14 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser, onBackToHome, onStats
             } else {
                 setStats(prev => ({ ...prev, lives: newLives }));
                 setGameState('playing');
-                setPlayer({ ...player, x: 50, y: 50 });
-                // Reset guards when life is lost
-                guards.forEach(g => g.reset());
+                resetPlayer();
+                resetGuards();
             }
         }
 
         try {
             const resp = await axios.post('/api/game/update', {
-                username: user.username,
-                mapId: map?.id,
-                solved: true,
-                correct: correct,
-                score: correct ? 50 : 0
+                username: user.username, mapId: map?.id, solved: true, correct, score: correct ? 50 : 0
             });
             onUpdateUser(resp.data);
         } catch (e) {
@@ -361,45 +117,19 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser, onBackToHome, onStats
         }
     };
 
-    if (gameState === 'gameOver') {
-        return <GameOverOverlay score={stats.score} />;
-    }
-
-    if (gameState === 'missionComplete') {
-        return <MissionCompleteOverlay score={stats.score} />;
-    }
+    if (gameState === 'gameOver') return <GameOverOverlay score={stats.score} />;
+    if (gameState === 'missionComplete') return <MissionCompleteOverlay score={stats.score} />;
 
     return (
-        <div
-            className="game-container grid-gaming scanlines"
-            style={{
-                background: currentTheme.bg,
-                position: 'relative',
-                overflow: 'hidden'
-            }}
-        >
-            {/* HUD and Canvas... */}
+        <div className="game-container grid-gaming scanlines" style={{ background: currentTheme.bg, position: 'relative', overflow: 'hidden' }}>
             <canvas ref={canvasRef} width={800} height={500} style={{ display: 'block', borderRadius: '4px' }} />
-
-            {isPaused && (
-                <PauseOverlay
-                    themeColor={currentTheme.primary}
-                    onResume={() => setIsPaused(false)}
-                    onBackToHome={onBackToHome}
-                />
-            )}
-
+            {isPaused && <PauseOverlay themeColor={currentTheme.primary} onResume={() => setIsPaused(false)} onBackToHome={onBackToHome} />}
             {gameState === 'puzzle' && <PuzzleModal onSolve={handlePuzzleResult} themeColor={currentTheme.primary} />}
             {showLifeLost && <LifePopup lives={stats.lives} onClose={() => setShowLifeLost(false)} />}
-
             {gameState === 'levelCleared' && (
                 <LevelClearedOverlay
-                    themeColor={currentTheme.primary}
-                    level={stats.level}
-                    onProceed={() => {
-                        handleLevelComplete();
-                        setGameState('playing');
-                    }}
+                    themeColor={currentTheme.primary} level={stats.level}
+                    onProceed={() => { handleLevelUpdate(); setGameState('playing'); }}
                 />
             )}
         </div>
