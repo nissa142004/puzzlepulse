@@ -7,7 +7,7 @@ const PauseOverlay = ({ themeColor, onResume, onBackToHome }) => {
                 <h2 className="glow-text" style={{ color: themeColor, fontSize: '3rem', marginBottom: '2rem' }}>PAUSED</h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center' }}>
                     <button className="primary pulse-animation" style={{ width: '200px' }} onClick={onResume}>RESUME</button>
-                    <button className="secondary" style={{ width: '200px' }} onClick={onBackToHome}>BACK TO HUB</button>
+                    <button className="secondary" style={{ width: '200px' }} onClick={onBackToHome}>QUIT TO DASHBOARD</button>
                 </div>
             </div>
         </div>

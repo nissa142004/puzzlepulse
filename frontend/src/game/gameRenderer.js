@@ -25,7 +25,7 @@ export const drawStartPad = (ctx, theme) => {
     ctx.strokeRect(5, 5, 90, 490);
     ctx.fillStyle = theme.primary;
     ctx.font = 'bold 10px monospace';
-    ctx.fillText("ENTRY ZONE", 15, 20);
+    ctx.fillText("START", 15, 20);
 };
 
 export const drawExitGate = (ctx, theme) => {
@@ -51,7 +51,7 @@ export const drawExitGate = (ctx, theme) => {
     ctx.fillStyle = theme.primary;
     ctx.font = 'bold 12px Orbitron, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText("EXIT GATE", 0, 0);
+    ctx.fillText("EXIT", 0, 0);
     ctx.restore();
 };
 

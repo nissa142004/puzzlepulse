@@ -58,7 +58,7 @@ function Profile({ user, onUpdateUser }) {
                                     placeholder="player@example.com"
                                     className="mono-input"
                                 />
-                                <label style={{ color: 'var(--neon-cyan)', fontSize: '0.8rem', marginTop: '1rem', display: 'block' }}>PLAYER BIOGRAPHY</label>
+                                <label style={{ color: 'var(--neon-cyan)', fontSize: '0.8rem', marginTop: '1rem', display: 'block' }}>PLAYER BIO</label>
                                 <textarea
                                     className="mono-input"
                                     style={{
@@ -77,11 +77,11 @@ function Profile({ user, onUpdateUser }) {
                         ) : (
                             <div className="animate-fade">
                                 <div style={{ marginBottom: '1.5rem' }}>
-                                    <p style={{ color: 'var(--text-dim)', fontSize: '0.7rem', textTransform: 'uppercase' }}>Electronic Address</p>
-                                    <p style={{ color: '#fff' }}>{user.email || 'UNSPECIFIED'}</p>
+                                    <p style={{ color: 'var(--text-dim)', fontSize: '0.7rem', textTransform: 'uppercase' }}>Email Address</p>
+                                <p style={{ color: '#fff' }}>{user.email || 'NOT SET'}</p>
                                 </div>
                                 <div>
-                                    <p style={{ color: 'var(--text-dim)', fontSize: '0.7rem', textTransform: 'uppercase' }}>Biography</p>
+                                    <p style={{ color: 'var(--text-dim)', fontSize: '0.7rem', textTransform: 'uppercase' }}>Bio</p>
                                     <p style={{ color: 'var(--text)', whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
                                         {user.bio || 'No bio available. Add one to let others know who you are.'}
                                     </p>
@@ -99,19 +99,19 @@ function Profile({ user, onUpdateUser }) {
                             className="secondary"
                             style={{ width: 'fit-content', color: 'var(--neon-pink)', borderColor: 'var(--neon-pink)', fontSize: '0.8rem' }}
                             onClick={async () => {
-                                if (window.confirm("CRITICAL WARNING: This will PERMANENTLY WIPE all mission progress, scores, and sector unlocks. This action cannot be undone. Proceed?")) {
+                                if (window.confirm("WARNING: This will PERMANENTLY RESET all game progress, scores, and unlocked maps. This action cannot be undone. Proceed?")) {
                                     try {
                                         const res = await axios.post('/api/game/reset', { username: user.username });
                                         onUpdateUser(res.data);
                                         localStorage.setItem('puzzlePulseUser', JSON.stringify(res.data));
-                                        alert("Neural link reset. All mission data purged.");
+                                        alert("Account progress reset. All game data cleared.");
                                     } catch (err) {
-                                        alert("Purge failed. Connection unstable.");
+                                        alert("Reset failed. Connection error.");
                                     }
                                 }
                             }}
                         >
-                            WIPE MISSION DATA
+                            RESET ALL PROGRESS
                         </button>
                     </div>
                 </div>

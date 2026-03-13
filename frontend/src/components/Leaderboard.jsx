@@ -102,7 +102,7 @@ function Leaderboard({ user }) {
         <div className="main-content animate-fade leaderboard-container">
             <header className="leaderboard-header">
                 <div>
-                    <h1 className="glow-text" style={{ fontSize: '2.5rem' }}>Player Hall of Fame</h1>
+                    <h1 className="glow-text" style={{ fontSize: '2.5rem' }}>Player Leaderboard</h1>
                     <p className="subtitle">Real-time sync with player database</p>
                 </div>
                 <div style={{ display: 'flex', gap: '2rem' }}>
@@ -138,7 +138,7 @@ function Leaderboard({ user }) {
 
                         <div className="glass-panel" style={{ padding: '1rem' }}>
                             <div style={{ padding: '1rem', borderBottom: '1px solid var(--border)', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', color: 'var(--text-dim)', fontSize: '0.7rem' }}>
-                                <span>PLAYER IDENTIFIER</span>
+                                <span>PLAYER NAME</span>
                                 <div style={{ display: 'flex', gap: '115px' }}>
                                     <span>PROGRESS</span>
                                     <span>TOTAL SCORE</span>
