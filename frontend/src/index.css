@@ -501,9 +501,39 @@ input:focus {
 
 /* Login/Register Container override */
 .login-container {
-  max-width: 450px;
-  margin: 100px auto;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 85vh;
+}
+
+.login-container .glass-panel {
+  padding: 4rem 3rem;
+}
+
+.login-container h1 {
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-container p {
+  font-size: 1.2rem;
+  margin-bottom: 2.5rem;
+}
+
+.login-container input {
+  padding: 1.2rem;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.login-container button {
+  padding: 1.2rem;
+  font-size: 1.2rem;
 }
 
 /* Professional Gaming Layout Utilities */
@@ -645,6 +675,34 @@ input:focus {
   }
 }
 
-.pulse-cyan {
-  animation: neon-pulse 2s infinite;
+/* Game Window Layout */
+.game-window-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.game-main-area {
+  flex: 1;
+  position: relative;
+}
+
+.game-side-panel {
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (max-width: 1200px) {
+  .game-window-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .game-side-panel {
+    width: 100%;
+    max-width: 800px;
+  }
 }

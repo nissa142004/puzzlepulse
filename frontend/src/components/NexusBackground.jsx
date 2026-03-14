@@ -34,6 +34,19 @@ const NexusBackground = () => {
         const connectionDist = 150;
         const mouseConnectionDist = 200;
 
+        // Static stars configuration
+        const starCount = 100;
+        const stars = [];
+
+        for (let i = 0; i < starCount; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 1.5,
+                opacity: Math.random()
+            });
+        }
+
         for (let i = 0; i < particleCount; i++) {
             particles.push({
                 x: Math.random() * canvas.width,
@@ -56,6 +69,17 @@ const NexusBackground = () => {
             bgGrad.addColorStop(1, '#05070a');
             ctx.fillStyle = bgGrad;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Stars
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+                ctx.fill();
+
+                // Optional: very slow twinkle
+                if (Math.random() > 0.98) star.opacity = Math.random();
+            });
 
             particles.forEach((p, i) => {
                 // Update position

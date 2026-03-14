@@ -33,7 +33,7 @@ function Login({ onLogin, onSwitchToRegister }) {
         <div className="login-container animate-fade">
             <div className="glass-panel">
                 <h1 className="glow-text">PuzzlePulse</h1>
-                <p style={{ marginBottom: '2rem', color: 'var(--text-dim)' }}>Secure access required for player login.</p>
+                <p style={{ marginBottom: '2rem', color: 'var(--text-dim)' }}>Log in to continue playing.</p>
 
                 <form onSubmit={handleSubmit}>
                     <input
