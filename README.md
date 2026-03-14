@@ -1,19 +1,19 @@
-# 🌀 PuzzlePulse: Modern Puzzle Challenge
+# 🌀 PuzzlePulse: Tactical Stealth Infiltration
 
-**PuzzlePulse** is a high-speed, 2D puzzle game designed to demonstrate modern web architecture, cloud persistence, and user authentication. Navigate challenging levels, solve logic puzzles, and avoid the guards to maximize your score.
+**PuzzlePulse** is a high-stakes, 2D stealth game designed to demonstrate distributed service architecture, cloud persistence, and virtual identity. Navigate high-security sectors, decode tactical puzzles, and evade elite guard AI to maximize your neural sync score.
 
 ![Dashboard Preview](https://via.placeholder.com/800x400.png?text=PuzzlePulse+Tactical+Hub)
 
-## 🛠️ Project Stack
+## 🛠️ Tactical Stack
 
-- **Frontend**: React (Vite) + Vanilla CSS (Modern Glassmorphism)
+- **Frontend**: React (Vite) + Vanilla CSS (Glassmorphism/Neon Aesthetics)
 - **Backend**: Express (Node.js) + Mongoose
 - **Database**: MongoDB Atlas (Cloud Cluster)
-- **Persistence**: Real-time cloud sync with automatic progress saving.
+- **Persistence**: Real-time cloud sync with local high-availability fallback.
 
-## 🚀 Setup Instructions
+## 🚀 Deployment Protocol
 
-### 1. Server Setup (Backend)
+### 1. HQ Initialization (Backend)
 ```bash
 cd backend
 npm install
@@ -21,7 +21,7 @@ npm install
 npm run start
 ```
 
-### 2. Client Setup (Frontend)
+### 2. Operative Hub (Frontend)
 ```bash
 cd frontend
 npm install
@@ -30,15 +30,15 @@ npm run dev
 
 ## 🧠 System Architecture
 
-- **Modular Code**: Clean separation between game logic and player management.
-- **AI Logic**: Reliable guard patrolling and detection logic managed via the game loop.
-- **Cloud Persistence**: Player profiles and game progress synchronized globally via MongoDB.
+- **Low Coupling**: Independent microservices for game logic and operative management.
+- **Event-Driven AI**: Guard patrolling and detection logic managed via tactical canvas loops.
+- **Cloud-First Persistence**: Operative profiles and mission progress synchronized globally via MongoDB.
 
-## 🎮 Player Types
+## 🎮 Operative Roles
 
 - **Ghost**: Senior stealth specialist.
 - **Shadow**: Infiltration expert.
 - **Pulse**: Neural sync specialist.
 
 ---
-*Get ready to pulse!*
+*Clearance Level: Alpha. Confidentiality Required.*

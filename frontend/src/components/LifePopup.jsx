@@ -11,8 +11,8 @@ function LifePopup({ lives, onClose }) {
     return (
         <div className="life-popup-overlay">
             <div className="glass-panel life-popup-content">
-                <h1>INCORRECT ANSWER</h1>
-                <p style={{ fontSize: '1.5rem', marginBottom: '2rem' }}>TRY AGAIN!</p>
+                <h1>MIS-PULSE DETECTED</h1>
+                <p style={{ fontSize: '1.5rem', marginBottom: '2rem' }}>SECURITY COUNTER-MEASURE ACTIVATED</p>
 
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', fontSize: '2.5rem' }}>
                     {[...Array(3)].map((_, i) => (

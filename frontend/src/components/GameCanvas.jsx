@@ -30,7 +30,7 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser, onBackToHome, onStats
 
     const handleLevelExit = () => {
         if (stats.level >= 16) {
-            setGameState('gameComplete');
+            setGameState('missionComplete');
             handleLevelUpdate(true);
         } else {
             setGameState('levelCleared');
@@ -118,7 +118,7 @@ const GameCanvas = ({ user, map, difficulty, onUpdateUser, onBackToHome, onStats
     };
 
     if (gameState === 'gameOver') return <GameOverOverlay score={stats.score} />;
-    if (gameState === 'gameComplete') return <MissionCompleteOverlay score={stats.score} />;
+    if (gameState === 'missionComplete') return <MissionCompleteOverlay score={stats.score} />;
 
     return (
         <div className="game-container grid-gaming scanlines" style={{ background: currentTheme.bg, position: 'relative', overflow: 'hidden' }}>

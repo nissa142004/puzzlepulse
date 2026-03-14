@@ -12,6 +12,7 @@
   --border: rgba(48, 54, 61, 0.7);
   --glow-cyan: 0 0 15px rgba(0, 255, 242, 0.5);
   --glow-pink: 0 0 15px rgba(255, 0, 127, 0.5);
+  --vga-scan: rgba(18, 16, 16, 0.1);
 }
 
 /* Custom Scrollbar */
@@ -106,7 +107,7 @@ input {
 input:focus {
   outline: none;
   border-color: var(--neon-cyan);
-  box-shadow: var(--glow-cyan);
+  box-shadow: var(--glow);
 }
 
 /* Base Layout */
@@ -122,14 +123,6 @@ input:focus {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.main-content.auth-view {
-  justify-content: center;
-  align-items: center;
-  min-height: calc(100vh - 4rem);
 }
 
 /* Dashboard Grid */
@@ -254,6 +247,39 @@ input:focus {
   100% {
     opacity: 0.1;
   }
+}
+
+/* Leaderboard */
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.leaderboard-table tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.rank-1 {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.rank-2 {
+  color: #c0c0c0;
+  font-weight: bold;
+}
+
+.rank-3 {
+  color: #cd7f32;
+  font-weight: bold;
 }
 
 /* Map Cards */
@@ -475,14 +501,9 @@ input:focus {
 
 /* Login/Register Container override */
 .login-container {
-  width: 100%;
-  max-width: 600px; /* Increased from 450px */
+  max-width: 450px;
+  margin: 100px auto;
   text-align: center;
-  margin-bottom: 5vh;
-}
-
-.login-container .glass-panel {
-  padding: 4rem; /* Increased padding for a more "premium" feel */
 }
 
 /* Professional Gaming Layout Utilities */
@@ -497,6 +518,13 @@ input:focus {
   color: var(--text-dim);
   display: block;
   margin-bottom: 0.3rem;
+}
+
+.stat-value-v2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #fff;
 }
 
 .progress-bar-v2 {

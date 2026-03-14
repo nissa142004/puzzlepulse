@@ -58,7 +58,7 @@ function PuzzleModal({ onSolve, themeColor = 'var(--neon-cyan)' }) {
                         <p style={{ color: 'var(--neon-pink)', marginBottom: '1rem' }}>{error}</p>
                         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
                             <button className="primary" onClick={fetchPuzzle} style={{ background: themeColor }}>RETRY LINK</button>
-                            <button className="secondary" onClick={() => onSolve(false)}>QUIT PUZZLE</button>
+                            <button className="secondary" onClick={() => onSolve(false)}>ABORT MISSION</button>
                         </div>
                     </div>
                 ) : (

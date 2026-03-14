@@ -107,7 +107,7 @@ const ProfileCard = ({ user, showUserInfo = true, enableMobileTilt = true }) => 
                     </div>
                     <div>
                         <h2 className="glow-text" style={{ margin: 0, fontSize: '1.8rem' }}>{user.username}</h2>
-                        <p style={{ color: 'var(--text-dim)', margin: 0, fontSize: '0.9rem' }}>STATUS: ACTIVE</p>
+                        <p style={{ color: 'var(--text-dim)', margin: 0, fontSize: '0.9rem' }}>STATUS: ACTIVE PLAYER</p>
                     </div>
                 </div>
 
@@ -118,7 +118,7 @@ const ProfileCard = ({ user, showUserInfo = true, enableMobileTilt = true }) => 
                             <p style={{ margin: 0, fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--neon-cyan)' }}>{user.totalScore || 0}</p>
                         </div>
                         <div className="glass-panel" style={{ padding: '0.8rem', textAlign: 'center' }}>
-                            <p style={{ margin: 0, color: 'var(--text-dim)', fontSize: '0.7rem' }}>LEVEL</p>
+                            <p style={{ margin: 0, color: 'var(--text-dim)', fontSize: '0.7rem' }}>CLEARANCE</p>
                             <p style={{ margin: 0, fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--neon-purple)' }}>LVL {user.highestLevel || 1}</p>
                         </div>
                         <div className="glass-panel" style={{ padding: '0.8rem', textAlign: 'center' }}>
@@ -126,7 +126,7 @@ const ProfileCard = ({ user, showUserInfo = true, enableMobileTilt = true }) => 
                             <p style={{ margin: 0, fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--neon-pink)' }}>{Math.round(user.accuracy || 0)}%</p>
                         </div>
                         <div className="glass-panel" style={{ padding: '0.8rem', textAlign: 'center' }}>
-                            <p style={{ margin: 0, color: 'var(--text-dim)', fontSize: '0.7rem' }}>SOLVED</p>
+                            <p style={{ margin: 0, color: 'var(--text-dim)', fontSize: '0.7rem' }}>MISSIONS</p>
                             <p style={{ margin: 0, fontSize: '1.2rem', fontWeight: 'bold', color: '#fff' }}>{user.totalSolved || 0}</p>
                         </div>
                     </div>
@@ -134,7 +134,7 @@ const ProfileCard = ({ user, showUserInfo = true, enableMobileTilt = true }) => 
 
                 <div style={{ marginTop: '1.5rem', fontSize: '0.7rem', color: 'var(--text-dim)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.3rem' }}>
-                        <span>GAME PROGRESS:</span>
+                        <span>MAP PROGRESS:</span>
                         <span>{user.maps?.filter(m => m.unlocked)?.length || 0}/4</span>
                     </div>
                     <div style={{ width: '100%', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px' }}>
@@ -145,7 +145,7 @@ const ProfileCard = ({ user, showUserInfo = true, enableMobileTilt = true }) => 
                             boxShadow: '0 0 10px var(--neon-cyan)'
                         }} />
                     </div>
-                    <p style={{ marginTop: '1rem', opacity: 0.6 }}>JOINED: {new Date(user.createdAt).toLocaleDateString()}</p>
+                    <p style={{ marginTop: '1rem', opacity: 0.6 }}>PLAYER SINCE: {new Date(user.createdAt).toLocaleDateString()}</p>
                 </div>
             </div>
         </div>
