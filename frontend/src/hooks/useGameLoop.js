@@ -32,7 +32,8 @@ const useGameLoop = (gameState, isPaused, showLifeLost, stats, map, difficulty, 
 
         const newGuards = [];
         const baseSpeedMod = DIFFICULTY_MULTIPLIERS[difficulty] || 1.0;
-        const numGuards = stats.level === 1 ? 1 : Math.floor((1 + stats.level * 0.4) * (difficulty === 'hard' ? 1.3 : 1));
+        let calculatedGuards = Math.floor((1 + stats.level * 0.4) * (difficulty === 'hard' ? 1.3 : 1));
+        const numGuards = Math.max(3, calculatedGuards); // Minimum 3 guards
 
         for (let i = 0; i < numGuards; i++) {
             // Spawn guards away from the start initially
@@ -45,7 +46,8 @@ const useGameLoop = (gameState, isPaused, showLifeLost, stats, map, difficulty, 
                 getSafePoint(100, 750)
             ];
 
-            const baseLevelSpeed = 1.2 + (stats.level - 1) * 0.4;
+            // Base speed significantly increased for early levels to boost difficulty
+            const baseLevelSpeed = Math.max(3.5, 2.0 + (stats.level - 1) * 0.5);
             const finalGuardSpeed = baseLevelSpeed * baseSpeedMod;
             newGuards.push(new Guard(startPoint.x, startPoint.y, path, finalGuardSpeed));
         }
