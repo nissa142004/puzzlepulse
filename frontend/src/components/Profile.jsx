@@ -77,8 +77,8 @@ function Profile({ user, onUpdateUser }) {
                         ) : (
                             <div className="animate-fade">
                                 <div style={{ marginBottom: '1.5rem' }}>
-                                    <p style={{ color: 'var(--text-dim)', fontSize: '0.7rem', textTransform: 'uppercase' }}>Electronic Address</p>
-                                    <p style={{ color: '#fff' }}>{user.email || 'UNSPECIFIED'}</p>
+                                    <p style={{ color: 'var(--text-dim)', fontSize: '0.7rem', textTransform: 'uppercase' }}>Email Address</p>
+                                    <p style={{ color: '#fff' }}>{user.email || 'None'}</p>
                                 </div>
                                 <div>
                                     <p style={{ color: 'var(--text-dim)', fontSize: '0.7rem', textTransform: 'uppercase' }}>Biography</p>
@@ -92,26 +92,26 @@ function Profile({ user, onUpdateUser }) {
                     </div>
 
                     <div style={{ marginTop: 'auto', paddingTop: '2rem', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        <div style={{ fontSize: '0.7rem', opacity: 0.5 }}>
-                            DANGER: ACCESSING PLAYER DATA. UNAUTHORIZED VIEWING IS PROHIBITED.
+                        <div style={{ fontSize: '0.7rem', opacity: 0.5, color: 'var(--neon-pink)' }}>
+                            DANGER ZONE: THIS ACTION CANNOT BE UNDONE.
                         </div>
                         <button
                             className="secondary"
                             style={{ width: 'fit-content', color: 'var(--neon-pink)', borderColor: 'var(--neon-pink)', fontSize: '0.8rem' }}
                             onClick={async () => {
-                                if (window.confirm("CRITICAL WARNING: This will PERMANENTLY WIPE all mission progress, scores, and sector unlocks. This action cannot be undone. Proceed?")) {
+                                if (window.confirm("WARNING: This will permanently delete all your progress, scores, and unlocked levels. Proceed?")) {
                                     try {
                                         const res = await axios.post('/api/game/reset', { username: user.username });
                                         onUpdateUser(res.data);
                                         localStorage.setItem('puzzlePulseUser', JSON.stringify(res.data));
-                                        alert("Neural link reset. All mission data purged.");
+                                        alert("Game data reset successfully.");
                                     } catch (err) {
-                                        alert("Purge failed. Connection unstable.");
+                                        alert("Reset failed. Please try again.");
                                     }
                                 }
                             }}
                         >
-                            WIPE MISSION DATA
+                            RESET GAME DATA
                         </button>
                     </div>
                 </div>

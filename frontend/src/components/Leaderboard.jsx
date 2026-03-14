@@ -138,9 +138,9 @@ function Leaderboard({ user }) {
 
                         <div className="glass-panel" style={{ padding: '1rem' }}>
                             <div style={{ padding: '1rem', borderBottom: '1px solid var(--border)', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', color: 'var(--text-dim)', fontSize: '0.7rem' }}>
-                                <span>PLAYER IDENTIFIER</span>
+                                <span>PLAYER</span>
                                 <div style={{ display: 'flex', gap: '115px' }}>
-                                    <span>PROGRESS</span>
+                                    <span>LEVEL</span>
                                     <span>TOTAL SCORE</span>
                                 </div>
                             </div>
