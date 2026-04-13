@@ -1,0 +1,112 @@
+:root {
+  --bg-color: #0d1117;
+  --panel-bg: rgba(22, 27, 34, 0.8);
+  --primary: #58a6ff;
+  --secondary: #238636;
+  --accent: #bc8cff;
+  --text: #c9d1d9;
+  --text-dim: #8b949e;
+  --neon-cyan: #00fff2;
+  --neon-pink: #ff007f;
+  --neon-purple: #bc8cff;
+  --border: rgba(48, 54, 61, 0.7);
+  --glow-cyan: 0 0 15px rgba(0, 255, 242, 0.5);
+  --glow-pink: 0 0 15px rgba(255, 0, 127, 0.5);
+  --vga-scan: rgba(18, 16, 16, 0.1);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+.glow-text {
+  text-shadow: 0 0 10px var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+button {
+  cursor: pointer;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+button.primary {
+  background: linear-gradient(135deg, var(--primary), #1f6feb);
+  color: white;
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.4);
+}
+
+button.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(88, 166, 255, 0.6);
+}
+
+button.secondary {
+  background: var(--panel-bg);
+  border: 1px solid var(--primary);
+  color: var(--primary);
+}
+
+button.secondary:hover {
+  background: rgba(88, 166, 255, 0.1);
+}
+
+input {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: white;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--neon-cyan);
+  box-shadow: var(--glow);
+}
+

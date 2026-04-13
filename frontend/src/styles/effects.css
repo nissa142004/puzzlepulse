@@ -1,0 +1,143 @@
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Scanline Effect */
+.scanlines {
+  position: relative;
+  overflow: hidden;
+}
+
+.scanlines::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  z-index: 2;
+  background-size: 100% 4px, 3px 100%;
+  pointer-events: none;
+}
+
+.scanlines::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(18, 16, 16, 0.1);
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+  animation: flicker 0.12s infinite;
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0.1;
+  }
+
+  50% {
+    opacity: 0.05;
+  }
+
+  100% {
+    opacity: 0.1;
+  }
+}
+
+/* Animations */
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+
+  70% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 255, 242, 0.4);
+  }
+
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(0, 255, 242, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 255, 242, 0);
+  }
+}
+
+.pulse-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawPulse 3s linear infinite;
+}
+
+@keyframes drawPulse {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Gaming Grid Utility */
+.grid-gaming {
+  background-image: linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Animations Upgrade */
+@keyframes neon-pulse {
+  0% {
+    box-shadow: 0 0 5px var(--neon-cyan);
+  }
+
+  50% {
+    box-shadow: 0 0 20px var(--neon-cyan);
+  }
+
+  100% {
+    box-shadow: 0 0 5px var(--neon-cyan);
+  }
+}
+
