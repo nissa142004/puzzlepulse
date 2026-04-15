@@ -64,7 +64,8 @@ function PuzzleModal({ onSolve, themeColor = 'var(--neon-cyan)' }) {
                 ) : (
                     <>
                         <p style={{ margin: '1rem 0', color: 'var(--text-dim)', fontSize: '0.9rem' }}>
-                            Neural handshake required. Decipher pulse pattern.
+                            Neural handshake required. Decipher pulse pattern. <br />
+                            Count the hearts to save the life.
                         </p>
 
                         {loading ? (
@@ -88,7 +89,7 @@ function PuzzleModal({ onSolve, themeColor = 'var(--neon-cyan)' }) {
                                             className="mono-input"
                                             style={{ width: '60px', marginBottom: 0, padding: '0.5rem', textAlign: 'center', borderColor: themeColor }}
                                         />
-                                        <button type="submit" className="primary" style={{ background: themeColor, padding: '0.5rem 1rem' }}>RE-SYNC</button>
+                                        <button type="submit" className="primary" style={{ background: themeColor, padding: '0.5rem 1rem' }}>Submit</button>
                                     </form>
                                 </div>
                             </div>
