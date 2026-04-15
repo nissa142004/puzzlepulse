@@ -126,8 +126,8 @@ function Dashboard({ user, onStartGame }) {
                     <div>
                         <h3 className="glow-text" style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>HOW TO PLAY</h3>
                         <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem', maxWidth: '800px' }}>
-                            Choose an active level. Complete 5 stages in each level to unlock the next part of the game.
-                            Your progress is capped at 15 total stages.
+                            Choose an active level. Complete 4 stages in each level to unlock the next part of the game.
+                            Your progress is capped at 16 total stages.
                         </p>
                     </div>
                     <Terminal size={40} color="var(--border)" style={{ opacity: 0.5 }} />
